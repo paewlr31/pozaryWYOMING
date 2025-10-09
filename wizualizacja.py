@@ -6,23 +6,32 @@ from datetime import datetime, timedelta
 # Wczytaj dane z wildfires_wy.csv
 df = pd.read_csv('wildfires_wy.csv', low_memory=False)
 
-# Filtruj dane dla roku 2015 i usuń rekordy bez CONT_DOY
-wy_2015 = df[(df['FIRE_YEAR'] == 2015) & (df['CONT_DOY'].notna())]
+# Filtruj dane dla roku 2015 i usuń rekordy z brakującym FIRE_SIZE
+wy_2015 = df[(df['FIRE_YEAR'] == 2015) & (df['FIRE_SIZE'].notna())]
+
+# Sprawdź dane
+print("Liczba rekordów w 2015:", len(wy_2015))
+print("Statystyki FIRE_SIZE:", wy_2015['FIRE_SIZE'].describe())
+print("Brakujące CONT_DOY:", wy_2015['CONT_DOY'].isna().sum())
+print("Pożary z DISCOVERY_DOY == CONT_DOY:", len(wy_2015[wy_2015['DISCOVERY_DOY'] == wy_2015['CONT_DOY']]))
 
 # Przygotuj dane dla GeoJSON
 features = []
 for _, row in wy_2015.iterrows():
-    # Konwersja DISCOVERY_DOY i CONT_DOY na daty
+    # Konwersja DISCOVERY_DOY na datę
     discovery_date = datetime(2015, 1, 1) + timedelta(days=int(row['DISCOVERY_DOY']) - 1)
-    cont_date = datetime(2015, 1, 1) + timedelta(days=int(row['CONT_DOY']) - 1)
     
-    # Oblicz czas trwania pożaru (w dniach)
-    duration_days = (cont_date - discovery_date).days
-    if duration_days <= 0:
-        duration_days = 1  # Minimum 1 dzień, jeśli DISCOVERY_DOY == CONT_DOY
+    # Obsługa CONT_DOY (domyślnie 5 dni trwania, jeśli brak lub DISCOVERY_DOY == CONT_DOY)
+    if pd.isna(row['CONT_DOY']) or row['DISCOVERY_DOY'] == row['CONT_DOY']:
+        cont_date = discovery_date + timedelta(days=5)
+    else:
+        cont_date = datetime(2015, 1, 1) + timedelta(days=int(row['CONT_DOY']) - 1)
     
-    # Maksymalny promień proporcjonalny do FIRE_SIZE
-    max_radius = row['FIRE_SIZE'] / 100  # Skalowanie
+    # Oblicz czas trwania pożaru (minimum 5 dni dla animacji)
+    duration_days = max(5, (cont_date - discovery_date).days)
+    
+    # Maksymalny promień (ograniczony, by uniknąć ogromnych kropek)
+    max_radius = min(50, max(2, row['FIRE_SIZE'] / 5))  # Ograniczenie do 50, minimum 2
     
     # Generuj punkty dla każdego dnia pożaru
     for day in range(duration_days + 1):
@@ -31,11 +40,9 @@ for _, row in wy_2015.iterrows():
         
         # Oblicz dynamiczny promień (rośnie do połowy, potem maleje)
         if day <= duration_days / 2:
-            # Rosnąca faza
-            radius = max_radius * (day / (duration_days / 2))
+            radius = max_radius * (day / (duration_days / 2))  # Rośnie
         else:
-            # Malejąca faza
-            radius = max_radius * ((duration_days - day) / (duration_days / 2))
+            radius = max_radius * ((duration_days - day) / (duration_days / 2))  # Maleje
         
         # Stwórz punkt GeoJSON
         feature = {
@@ -46,12 +53,13 @@ for _, row in wy_2015.iterrows():
             },
             'properties': {
                 'time': timestamp,
-                'popup': f"Fire: {row.get('FIRE_NAME', 'Unknown')}<br>Size: {row['FIRE_SIZE']} acres<br>Cause: {row['STAT_CAUSE_DESCR']}<br>Day: {day+1}/{duration_days+1}",
-                'style': {
-                    'radius': max(0.1, radius),  # Minimum 0.1, by kropki były widoczne
+                'popup': f"Fire: {row.get('FIRE_NAME', 'Unknown')}<br>Size: {row['FIRE_SIZE']} acres<br>Cause: {row.get('STAT_CAUSE_DESCR', 'Unknown')}<br>Day: {day+1}/{duration_days+1}",
+                'icon': 'circle',
+                'iconstyle': {
                     'fillColor': 'red',
                     'color': 'red',
-                    'fillOpacity': 0.6
+                    'fillOpacity': 0.6,
+                    'radius': max(2, radius)  # Minimum 2 dla widoczności
                 }
             }
         }
@@ -62,10 +70,10 @@ m = folium.Map(
     location=[43.0, -107.5],  # Środek Wyoming
     zoom_start=7,
     tiles='OpenStreetMap',
-    min_zoom=7,  # Minimalny zoom
-    max_bounds=True,  # Ogranicza przesuwanie
-    dragging=False,  # Wyłącza przesuwanie
-    zoom_control=False  # Wyłącza kontrolki zoomu (opcjonalne)
+    min_zoom=7,
+    max_bounds=True,
+    dragging=False,  # Bez przesuwania
+    zoom_control=False  # Bez zoomu
 )
 
 # Ustaw granice Wyoming
@@ -78,14 +86,16 @@ geojson = {
 }
 TimestampedGeoJson(
     geojson,
-    period='P1D',  # Krok czasowy: 1 dzień
+    period='P1D',  # Krok: 1 dzień
+    duration='P1D',  # Każdy punkt widoczny tylko przez 1 dzień
     auto_play=True,
     loop=False,
-    max_speed=10,
-    add_last_point=True
+    max_speed=1,  # Bardzo wolna animacja
+    transition_time=1000,  # Płynne przejścia
+    add_last_point=False  # Nie pokazuj punktów po zakończeniu
 ).add_to(m)
 
-# Zapisz mapę do pliku HTML
+# Zapisz mapę
 m.save('wy_fires_2015_dynamic.html')
 
 print("Dynamiczna mapa Wyoming zapisana jako 'wy_fires_2015_dynamic.html'. Otwórz w przeglądarce!")
