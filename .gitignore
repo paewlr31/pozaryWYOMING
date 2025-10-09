@@ -1,0 +1,8 @@
+/FPA_FOD_20170508.sqlite
+*.sqlite
+*.db
+*.db3
+
+wildfires.csv
+*.csv
+*.json
