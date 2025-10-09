@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 df = pd.read_csv('wildfires_wy.csv', low_memory=False)
 
 # Filtruj dane dla roku 2015 i usuń rekordy z brakującym FIRE_SIZE
+# Usuwamy brakujące CONT_DOY w filtrze, ale dla pewności obsłużymy je poniżej
 wy_2015 = df[(df['FIRE_YEAR'] == 2015) & (df['FIRE_SIZE'].notna())]
 
 # Sprawdź dane
@@ -21,7 +22,7 @@ for _, row in wy_2015.iterrows():
     # Konwersja DISCOVERY_DOY na datę
     discovery_date = datetime(2015, 1, 1) + timedelta(days=int(row['DISCOVERY_DOY']) - 1)
     
-    # Obsługa CONT_DOY (domyślnie 5 dni trwania, jeśli brak lub DISCOVERY_DOY == CONT_DOY)
+    # Obsługa CONT_DOY (domyślnie 5 dni, jeśli brak lub DISCOVERY_DOY == CONT_DOY)
     if pd.isna(row['CONT_DOY']) or row['DISCOVERY_DOY'] == row['CONT_DOY']:
         cont_date = discovery_date + timedelta(days=5)
     else:
@@ -31,7 +32,7 @@ for _, row in wy_2015.iterrows():
     duration_days = max(5, (cont_date - discovery_date).days)
     
     # Maksymalny promień (ograniczony, by uniknąć ogromnych kropek)
-    max_radius = min(50, max(2, row['FIRE_SIZE'] / 5))  # Ograniczenie do 50, minimum 2
+    max_radius = min(50, max(1, row['FIRE_SIZE'] / 20))  # Ograniczenie do 50
     
     # Generuj punkty dla każdego dnia pożaru
     for day in range(duration_days + 1):
@@ -59,7 +60,7 @@ for _, row in wy_2015.iterrows():
                     'fillColor': 'red',
                     'color': 'red',
                     'fillOpacity': 0.6,
-                    'radius': max(2, radius)  # Minimum 2 dla widoczności
+                    'radius': max(1, radius)  # Minimum 1 dla widoczności
                 }
             }
         }
@@ -87,12 +88,12 @@ geojson = {
 TimestampedGeoJson(
     geojson,
     period='P1D',  # Krok: 1 dzień
-    duration='P1D',  # Każdy punkt widoczny tylko przez 1 dzień
+    duration='P1D',  # Punkt widoczny tylko przez 1 dzień
     auto_play=True,
     loop=False,
-    max_speed=1,  # Bardzo wolna animacja
-    transition_time=1000,  # Płynne przejścia
-    add_last_point=False  # Nie pokazuj punktów po zakończeniu
+    max_speed=5,  # Wolniejsza animacja
+    transition_time=500,  # Płynne przejścia
+    add_last_point=False  # Nie zostawia punktów na końcu
 ).add_to(m)
 
 # Zapisz mapę
