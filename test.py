@@ -31,6 +31,9 @@ print("Std DURATION:", std_duration)
 # 2. Tworzenie siatki 1km x 1km
 # ==========================
 grid_size = 0.01
+# obliczamy grid_x/grid_y z surowych współrzędnych
+# ujemne wartości mogą występować; ważne jest przesunięcie grid_x_min przy rysowaniu
+
 df['grid_x'] = np.floor(df['LONGITUDE'] / grid_size).astype(int)
 df['grid_y'] = np.floor(df['LATITUDE'] / grid_size).astype(int)
 
@@ -58,6 +61,7 @@ class ForestAgent:
         self.grid_x = grid_x
         self.grid_y = grid_y
         self.status = 1 if random.random() < density else 0  # 1=las, 0=pusty
+        self.ignition_days = []  # lista dni startu zapalenia (może być wiele zapaleń)
 
 class CityAgent:
     def __init__(self, grid_x, grid_y):
@@ -122,8 +126,13 @@ class RegionAgent:
             x, y = random.choice(forest_cells)
             if random.random() < weather.fire_spread_probability():
                 fire = FireIncidentAgent(x, y, size=1, cause='Monte Carlo', start_day=day)
+                # Zarejestruj pożar w powiecie i przypisz datę zapalenia do odpowiadającego lasu
                 county.active_fires.append(fire)
                 total_fires.append(fire)
+                # Znajdź odpowiadający ForestAgent i zapamiętaj datę zapalenia
+                forest = next((fg for fg in forests if fg.grid_x == x and fg.grid_y == y), None)
+                if forest is not None:
+                    forest.ignition_days.append(day)
 
 # ==========================
 # 4. Inicjalizacja agentów
@@ -265,6 +274,11 @@ def spread_fire(fire, grid, weather, counties, total_fires):
                     new_fires.append(new_fire)
                     if len(total_fires) + len(new_fires) >= 30000:
                         break
+    # Przy tworzeniu nowych pożarów z rozprzestrzeniania, zapamiętaj daty zapaleń lasów
+    for nf in new_fires:
+        forest = next((fg for fg in forests if fg.grid_x == nf.grid_x and fg.grid_y == nf.grid_y), None)
+        if forest is not None:
+            forest.ignition_days.append(nf.start_day)
     return new_fires
 
 # ==========================
@@ -300,16 +314,21 @@ for day in range(1, simulation_days + 1):
             for fire in county.active_fires:
                 if fire.active:
                     ff.try_extinguish(fire)
+    # Aktualizuj siatkę
     grid[:, :] = 0
     for f_agent in forests:
         if f_agent.status == 1:
-            grid[f_agent.grid_y, f_agent.grid_x] = 1
+            # upewnij się, że współrzędne mieszczą się w siatce
+            if 0 <= f_agent.grid_y < grid_height and 0 <= f_agent.grid_x < grid_width:
+                grid[f_agent.grid_y, f_agent.grid_x] = 1
     for city in cities:
-        grid[city.grid_y, city.grid_x] = 3
+        if 0 <= city.grid_y < grid_height and 0 <= city.grid_x < grid_width:
+            grid[city.grid_y, city.grid_x] = 3
     for county in counties.values():
         for fire in county.active_fires:
             if fire.active:
-                grid[fire.grid_y, fire.grid_x] = 2
+                if 0 <= fire.grid_y < grid_height and 0 <= fire.grid_x < grid_width:
+                    grid[fire.grid_y, fire.grid_x] = 2
 
 # ==========================
 # 7. Wizualizacja mapowa (Folium)
@@ -331,11 +350,11 @@ m.options['maxBounds'] = bounds
 m.options['maxBoundsViscosity'] = 1.0
 
 # Oddzielne warstwy dla statycznych obiektów
-forests_group = folium.FeatureGroup(name='Forests', show=True)
+forests_group = folium.FeatureGroup(name='Forests (statyczne)', show=True)
 cities_group = folium.FeatureGroup(name='Cities', show=True)
 firestations_group = folium.FeatureGroup(name='Fire Stations', show=True)
 
-# Lasy (statyczne, niski zIndex)
+# Lasy (statyczne, niski zIndex) - zawsze zielone jako tło
 forests_subset = random.sample(forests, min(len(forests), 5500))
 for forest in forests_subset:
     if forest.status == 1:
@@ -398,6 +417,7 @@ firestations_group.add_to(m)
 
 # Pożary (dynamiczne, najwyższy zIndex)
 features = []
+# Dodajemy cechy dla pożarów
 for county in counties.values():
     for fire in county.active_fires:
         if fire.duration < 2:  # Pomijaj pożary trwające krócej niż 2 dni
@@ -439,7 +459,70 @@ for county in counties.values():
             }
             features.append(feature)
 
-# Dodanie pożarów jako dynamicznej warstwy
+# DODATEK: dynamiczne zmienianie koloru kropek lasów na pomarańczowe przez 90 dni po zapaleniu
+# Zrobimy nakładkę z cechami czasowymi: pomarańczowe punkty pojawiają się od dnia zapalenia do +89 dni,
+# a następnie (opcjonalnie) wraca zielone tło (statyczne już jest dodane). Jeśli las zapala się wielokrotnie,
+# rozpatrujemy każde zapalenie osobno (lista ignition_days).
+
+for forest in forests:
+    if forest.status != 1:
+        continue
+    # współrzędne geograficzne lasu
+    lon = forest.grid_x * grid_size + grid_x_min * grid_size
+    lat = forest.grid_y * grid_size + grid_y_min * grid_size
+    if not (41.0 <= lat <= 45.0 and -111.0 <= lon <= -104.0):
+        continue
+    # dla każdego zapalenia dodajemy okres pomarańczowy 90 dni
+    for ign_day in forest.ignition_days:
+        for d in range(0, 90):
+            day_num = ign_day - 1 + d
+            if day_num < 0 or day_num >= simulation_days:
+                continue
+            current_date = datetime(2015, 1, 1) + timedelta(days=day_num)
+            timestamp = current_date.isoformat()
+            feature = {
+                'type': 'Feature',
+                'geometry': {'type': 'Point', 'coordinates': [lon, lat]},
+                'properties': {
+                    'time': timestamp,
+                    'popup': f"Burning forest (since day {ign_day}) - day {d+1}/90",
+                    'icon': 'circle',
+                    'iconstyle': {
+                        'fillColor': 'orange',
+                        'color': 'orange',
+                        'fillOpacity': 0.8,
+                        'radius': 3,
+                        'weight': 1,
+                        'zIndex': 1500  # Warstwa wyżej niż statyczne lasy, ale niżej niż pożary
+                    }
+                }
+            }
+            features.append(feature)
+        # Po 90 dniach dodajemy punkt zielony (opcjonalnie) — żeby wyraźnie pokazać "powrót do zielonego"
+        restore_day = ign_day + 90
+        if 1 <= restore_day <= simulation_days:
+            current_date = datetime(2015, 1, 1) + timedelta(days=restore_day - 1)
+            timestamp = current_date.isoformat()
+            feature = {
+                'type': 'Feature',
+                'geometry': {'type': 'Point', 'coordinates': [lon, lat]},
+                'properties': {
+                    'time': timestamp,
+                    'popup': f"Forest restored (after ignition day {ign_day})",
+                    'icon': 'circle',
+                    'iconstyle': {
+                        'fillColor': 'green',
+                        'color': 'green',
+                        'fillOpacity': 0.6,
+                        'radius': 2,
+                        'weight': 1,
+                        'zIndex': 100  # Niski zIndex dla przywróconego stanu
+                    }
+                }
+            }
+            features.append(feature)
+
+# Dodanie pożarów i warstwy lasów dynamicznych jako jednej kolekcji GeoJSON
 geojson = {'type': 'FeatureCollection', 'features': features}
 TimestampedGeoJson(
     geojson,
@@ -457,8 +540,8 @@ folium.LayerControl().add_to(m)
 
 # Debugowanie liczby remiz
 print(f"Liczba wygenerowanych remiz: {len(firefighters)}")
-print(f"Liczba punktów w features dla remiz: {sum(1 for ff in firefighters if 41.0 <= (ff.grid_y * grid_size + grid_y_min * grid_size) <= 45.0 and -111.0 <= (ff.grid_x * grid_size + grid_x_min * grid_size) <= -104.0)}")
+print(f"Liczba punktów w features (pożary + dynamiczne lasy): {len(features)}")
 
 # Zapisz mapę
-m.save('wy_fires_simulation_365_dynamic_size_corrected.html')
-print(f"Symulacja zapisana jako 'wy_fires_simulation_365_dynamic_size_corrected.html'. Liczba pożarów: {len(all_fires)}")
+m.save('wy_fires_simulation_365_dynamic_size_and_forest_color.html')
+print(f"Symulacja zapisana jako 'wy_fires_simulation_365_dynamic_size_and_forest_color.html'. Liczba pożarów: {len(all_fires)}")

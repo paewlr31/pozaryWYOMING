@@ -1,0 +1,15 @@
+jesli sie pali to zmieniamy kolor kropek lasow w danym regionie na pomaranczowy a potem wracay do zielonego
+ ale dopeiro po 90 dniach (pamietamy dzien kiedy sie dana kropka zapaliła dodajemy 90 i kiedy data sie pokryje 
+ to znowu robimy zielona tylko tyle) po prostu zapamietaj date zapalenia
+
+#rzeki - utrudniaja rozprzestrzenianie sie 
+#góry - utrudniaja rozprzestrzenianie sie
+
+#mozna dodac zeby pogoda miala wiekszy wplyw na rozprzestrzenianie sie pozarow
+#mozna dodac zeby pojazdy mialy wiekszy wplyw na gaszenie pozarow
+
+dodac pojazy ktore jezdza po drogach do pozarow z poblikskich remiz (duzo pojazdów) 
+jak pozar trw adłuzej to wtedywiecej pojazdów z czasem potem odjezdzaja jak ze zmienianiem promienia)
+zmniejszyc interwały do 6h - godziinnych
+
+#latex
