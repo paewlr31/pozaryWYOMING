@@ -314,6 +314,89 @@ for day in range(1, simulation_days + 1):
 # ==========================
 # 7. Wizualizacja mapowa (Folium)
 # ==========================
+# Inicjalizacja mapy
+m = folium.Map(
+    location=[43.0, -107.5],
+    zoom_start=9,
+    tiles='OpenStreetMap',
+    min_zoom=7,
+    max_bounds=True,
+    max_bounds_viscosity=1.0,
+    dragging=True,
+    zoom_control=True
+)
+bounds = [[41.0, -111.0], [45.0, -104.0]]
+m.fit_bounds(bounds)
+m.options['maxBounds'] = bounds
+m.options['maxBoundsViscosity'] = 1.0
+
+# Oddzielne warstwy dla statycznych obiektów
+forests_group = folium.FeatureGroup(name='Forests', show=True)
+cities_group = folium.FeatureGroup(name='Cities', show=True)
+firestations_group = folium.FeatureGroup(name='Fire Stations', show=True)
+
+# Lasy (statyczne, niski zIndex)
+forests_subset = random.sample(forests, min(len(forests), 5500))
+for forest in forests_subset:
+    if forest.status == 1:
+        lon = forest.grid_x * grid_size + grid_x_min * grid_size
+        lat = forest.grid_y * grid_size + grid_y_min * grid_size
+        if not (41.0 <= lat <= 45.0 and -111.0 <= lon <= -104.0):
+            continue
+        folium.CircleMarker(
+            location=[lat, lon],
+            radius=2,
+            fill=True,
+            color='green',
+            fill_color='green',
+            fill_opacity=0.4,
+            weight=1,
+            popup=f"Forest at ({forest.grid_x}, {forest.grid_y})",
+            zIndexOffset=100  # Niski zIndex dla lasów
+        ).add_to(forests_group)
+
+# Miasta (statyczne, średni zIndex)
+for city in cities:
+    lon = city.grid_x * grid_size + grid_x_min * grid_size
+    lat = city.grid_y * grid_size + grid_y_min * grid_size
+    if not (41.0 <= lat <= 45.0 and -111.0 <= lon <= -104.0):
+        continue
+    folium.CircleMarker(
+        location=[lat, lon],
+        radius=5,
+        fill=True,
+        color='blue',
+        fill_color='blue',
+        fill_opacity=0.8,
+        weight=1,
+        popup=f"City at ({city.grid_x}, {city.grid_y})",
+        zIndexOffset=300  # Średni zIndex dla miast
+    ).add_to(cities_group)
+
+# Remizy strażackie (statyczne, wyższy zIndex)
+for ff in firefighters:
+    lon = ff.grid_x * grid_size + grid_x_min * grid_size
+    lat = ff.grid_y * grid_size + grid_y_min * grid_size
+    if not (41.0 <= lat <= 45.0 and -111.0 <= lon <= -104.0):
+        continue
+    folium.CircleMarker(
+        location=[lat, lon],
+        radius=2,
+        fill=True,
+        color='black',
+        fill_color='black',
+        fill_opacity=0.8,
+        weight=1,
+        popup=f"Fire Station at ({ff.grid_x}, {ff.grid_y})",
+        zIndexOffset=400  # Wyższy zIndex dla remiz
+    ).add_to(firestations_group)
+
+# Dodanie statycznych warstw do mapy
+forests_group.add_to(m)
+cities_group.add_to(m)
+firestations_group.add_to(m)
+
+# Pożary (dynamiczne, najwyższy zIndex)
 features = []
 for county in counties.values():
     for fire in county.active_fires:
@@ -329,7 +412,6 @@ for county in counties.values():
         for day in range(duration_days + 1):  # Liczenie od 0 do duration_days
             current_date = datetime(2015, 1, 1) + timedelta(days=fire.start_day - 1 + day)
             timestamp = current_date.isoformat()
-            # Dynamiczna zmiana rozmiaru (jak w kodzie referencyjnym)
             if day <= duration_days / 2:
                 radius = max_radius * (day / (duration_days / 2))
             else:
@@ -351,116 +433,13 @@ for county in counties.values():
                         'fillOpacity': 0.6,
                         'radius': radius,
                         'weight': 1,
-                        'zIndex': 200
+                        'zIndex': 2000  # Najwyższy zIndex dla pożarów
                     }
                 }
             }
             features.append(feature)
 
-# Lasy (najniższa warstwa, 5500 w wizualizacji)
-forests_subset = random.sample(forests, min(len(forests), 5500))
-for forest in forests_subset:
-    if forest.status == 1:
-        lon = forest.grid_x * grid_size + grid_x_min * grid_size
-        lat = forest.grid_y * grid_size + grid_y_min * grid_size
-        if not (41.0 <= lat <= 45.0 and -111.0 <= lon <= -104.0):
-            continue
-        feature = {
-            'type': 'Feature',
-            'geometry': {
-                'type': 'Point',
-                'coordinates': [lon, lat]
-            },
-            'properties': {
-                'popup': f"Forest at ({forest.grid_x}, {forest.grid_y})",
-                'icon': 'circle',
-                'iconstyle': {
-                    'fillColor': 'green',
-                    'color': 'green',
-                    'fillOpacity': 0.4,
-                    'radius': 2,
-                    'weight': 1,
-                    'zIndex': 100
-                }
-            }
-        }
-        features.append(feature)
-
-# Miasta (nad pożarami)
-for city in cities:
-    lon = city.grid_x * grid_size + grid_x_min * grid_size
-    lat = city.grid_y * grid_size + grid_y_min * grid_size
-    if not (41.0 <= lat <= 45.0 and -111.0 <= lon <= -104.0):
-        continue
-    feature = {
-        'type': 'Feature',
-        'geometry': {
-            'type': 'Point',
-            'coordinates': [lon, lat]
-        },
-        'properties': {
-            'popup': f"City at ({city.grid_x}, {city.grid_y})",
-            'icon': 'circle',
-            'iconstyle': {
-                'fillColor': 'blue',
-                'color': 'blue',
-                'fillOpacity': 0.8,
-                'radius': 5,
-                'weight': 1,
-                'zIndex': 300
-            }
-        }
-    }
-    features.append(feature)
-
-# Remizy strażackie (statyczne, widoczne przez cały czas)
-for ff in firefighters:
-    lon = ff.grid_x * grid_size + grid_x_min * grid_size
-    lat = ff.grid_y * grid_size + grid_y_min * grid_size
-    if not (41.0 <= lat <= 45.0 and -111.0 <= lon <= -104.0):
-        continue
-    feature = {
-        'type': 'Feature',
-        'geometry': {
-            'type': 'Point',
-            'coordinates': [lon, lat]
-        },
-        'properties': {
-            'popup': f"Fire Station at ({ff.grid_x}, {ff.grid_y})",
-            'icon': 'circle',
-            'iconstyle': {
-                'fillColor': 'black',
-                'color': 'black',
-                'fillOpacity': 0.8,
-                'radius': 2,
-                'weight': 1,
-                'zIndex': 400
-            }
-        }
-    }
-    features.append(feature)
-
-# Debugowanie liczby remiz
-print(f"Liczba wygenerowanych remiz: {len(firefighters)}")
-print(f"Liczba punktów w features dla remiz: {sum(1 for f in features if f['properties']['popup'].startswith('Fire Station'))}")
-
-# Inicjalizacja mapy
-m = folium.Map(
-    location=[43.0, -107.5],
-    zoom_start=9,  # Zwiększony zoom dla lepszej widoczności
-    tiles='OpenStreetMap',
-    min_zoom=7,
-    max_bounds=True,
-    max_bounds_viscosity=1.0,
-    dragging=True,
-    zoom_control=True
-)
-bounds = [[41.0, -111.0], [45.0, -104.0]]
-m.fit_bounds(bounds)
-m.options['maxBounds'] = bounds
-m.options['maxBoundsViscosity'] = 1.0
-
-# Dodanie animacji
+# Dodanie pożarów jako dynamicznej warstwy
 geojson = {'type': 'FeatureCollection', 'features': features}
 TimestampedGeoJson(
     geojson,
@@ -472,6 +451,13 @@ TimestampedGeoJson(
     transition_time=500,
     add_last_point=False
 ).add_to(m)
+
+# Dodanie kontroli warstw
+folium.LayerControl().add_to(m)
+
+# Debugowanie liczby remiz
+print(f"Liczba wygenerowanych remiz: {len(firefighters)}")
+print(f"Liczba punktów w features dla remiz: {sum(1 for ff in firefighters if 41.0 <= (ff.grid_y * grid_size + grid_y_min * grid_size) <= 45.0 and -111.0 <= (ff.grid_x * grid_size + grid_x_min * grid_size) <= -104.0)}")
 
 # Zapisz mapę
 m.save('wy_fires_simulation_365_dynamic_size_corrected.html')
