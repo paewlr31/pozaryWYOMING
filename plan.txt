@@ -11,7 +11,7 @@ NIE POZARY W WYOMING TYLKO LASY INICJUJACE POZARY W WYOMING TO TROCHE CO INNEGO
 5. Mozna dodac zeby pogoda miala wiekszy wplyw na rozprzestrzenianie sie pozarow
 6. Dodac drogi
 7. Dodac wplyw ludzi
-8. Dodac pojazy ktore jezdza po drogach do pozarow z poblikskich remiz (duzo pojazdów) 
+8. Dodac pojazy od pozarow z poblikskich remiz (duzo pojazdów) 
 jak pozar trw adłuzej to wtedywiecej pojazdów z czasem potem odjezdzaja jak ze zmienianiem promienia
 {ResourceAgent} – reprezentuje zasoby logistyczne (np. wozy strażackie, samoloty gaśnicze, sprzęt);
  ich dostępność i rozmieszczenie ograniczają możliwości interwencji FirefighterAgent
