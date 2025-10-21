@@ -55,7 +55,6 @@ class CountyAgent:
         self.forest_area = forest_area
         self.fire_history = fire_history
         self.active_fires = []
-        # Inicjalizacja HumanActivityAgent dla powiatu
         self.human_activity = HumanActivityAgent(
             fips,
             tourism_level=random.uniform(0.2, 0.8),
@@ -67,19 +66,17 @@ class CountyAgent:
 class HumanActivityAgent:
     def __init__(self, county_fips, tourism_level=0.5, agriculture_level=0.3, transport_level=0.4, industry_level=0.2):
         self.county_fips = county_fips
-        self.tourism_level = tourism_level  # 0-1, np. turystyka zwiększa ryzyko (ogniska)
-        self.agriculture_level = agriculture_level  # 0-1, np. wypalanie resztek rolnych
-        self.transport_level = transport_level  # 0-1, np. iskry od pojazdów
-        self.industry_level = industry_level  # 0-1, np. wypadki przemysłowe
+        self.tourism_level = tourism_level
+        self.agriculture_level = agriculture_level
+        self.transport_level = transport_level
+        self.industry_level = industry_level
         self.fire_risk_multiplier = self.calculate_fire_risk()
 
     def calculate_fire_risk(self):
-        # Ważona suma aktywności zwiększająca ryzyko pożaru
-        return 1.0 + (self.tourism_level * 0.4 + self.agriculture_level * 0.3 +
-                      self.transport_level * 0.2 + self.industry_level * 0.1)
+        return 1.0 + (self.tourism_level * 2.0 + self.agriculture_level * 1.2 +
+                      self.transport_level * 0.8 + self.industry_level * 0.4)
 
     def update(self):
-        # Dynamiczna zmiana poziomów aktywności
         self.tourism_level = np.clip(self.tourism_level + np.random.normal(0, 0.05), 0, 1)
         self.agriculture_level = np.clip(self.agriculture_level + np.random.normal(0, 0.03), 0, 1)
         self.transport_level = np.clip(self.transport_level + np.random.normal(0, 0.02), 0, 1)
@@ -90,19 +87,19 @@ class ForestAgent:
     def __init__(self, grid_x, grid_y, density=0.8):
         self.grid_x = grid_x
         self.grid_y = grid_y
-        self.status = 1 if random.random() < density else 0  # 1=las, 0=pusty
-        self.ignition_days = []  # lista dni startu zapalenia
+        self.status = 1 if random.random() < density else 0
+        self.ignition_days = []
 
 class CityAgent:
     def __init__(self, grid_x, grid_y):
         self.grid_x = grid_x
         self.grid_y = grid_y
-        self.status = 3  # 3=miasto
+        self.status = 3
 
 class RiverAgent:
     def __init__(self, points):
-        self.points = points  # Lista krotek (grid_x, grid_y)
-        self.status = 4  # 4=rzeka
+        self.points = points
+        self.status = 4
 
 class MountainAgent:
     def __init__(self, min_x, max_x, min_y, max_y):
@@ -110,14 +107,14 @@ class MountainAgent:
         self.max_x = max_x
         self.min_y = min_y
         self.max_y = max_y
-        self.status = 5  # 5=góry
+        self.status = 5
 
 class RoadAgent:
     def __init__(self, points, weight, name=""):
-        self.points = points  # Lista krotek (grid_x, grid_y)
-        self.status = 6  # 6=droga
-        self.weight = weight  # 1=autostrada międzystanowa, 2=autostrada stanowa, 3=powiatowa, 4=gminna
-        self.name = name  # Nazwa drogi
+        self.points = points
+        self.status = 6
+        self.weight = weight
+        self.name = name
 
 class FireIncidentAgent:
     def __init__(self, grid_x, grid_y, size, cause, start_day):
@@ -176,13 +173,14 @@ class RegionAgent:
             base_ignition_prob = 0.05 * county.human_activity.fire_risk_multiplier
             if random.random() < base_ignition_prob:
                 x, y = random.choice(forest_cells)
-                if random.random() < weather.fire_spread_probability():
+                if random.random() < weather.fire_spread_probability() and grid[y, x] == 1:  # Tylko w lasach
                     fire = FireIncidentAgent(x, y, size=1, cause='Monte Carlo (Human Influenced)', start_day=day)
                     county.active_fires.append(fire)
                     total_fires.append(fire)
                     forest = next((fg for fg in forests if fg.grid_x == x and fg.grid_y == y), None)
-                    if forest is not None:
+                    if forest is not None and forest.status == 1:
                         forest.ignition_days.append(day)
+                        print(f"Zapłon lasu w ({x}, {y}), dzień: {day}, powiat: {county.name}")
 
 # ==========================
 # 4. Inicjalizacja agentów
@@ -371,15 +369,19 @@ def spread_fire(fire, grid, weather, counties, total_fires):
         nx, ny = fire.grid_x + dx, fire.grid_y + dy
         if 0 <= nx < grid_width and 0 <= ny < grid_height:
             spread_prob = weather.fire_spread_probability() * 0.5 * human_risk
-            if grid[ny, nx] == 4:  # Rzeka
+            if grid[ny, nx] == 4:
                 spread_prob *= 0.3
-            elif grid[ny, nx] == 5:  # Góry
+            elif grid[ny, nx] == 5:
                 spread_prob *= 1.2
-            elif grid[ny, nx] == 6:  # Droga
+            elif grid[ny, nx] == 6:
                 spread_prob *= 0.9
             if grid[ny, nx] == 1 and random.random() < spread_prob:
                 new_fire = FireIncidentAgent(nx, ny, size=1, cause='Spread', start_day=fire.start_day)
                 new_fires.append(new_fire)
+                forest = next((fg for fg in forests if fg.grid_x == nx and fg.grid_y == ny), None)
+                if forest is not None and forest.status == 1:
+                    forest.ignition_days.append(fire.start_day)
+                    print(f"Rozprzestrzenianie pożaru do ({nx}, {ny}), dzień: {fire.start_day}, powiat: {current_county.name if current_county else 'brak'}")
                 if len(total_fires) + len(new_fires) >= 30000:
                     break
     if current_county and len(total_fires) + len(new_fires) < 30000:
@@ -396,15 +398,15 @@ def spread_fire(fire, grid, weather, counties, total_fires):
                         spread_prob *= 1.2
                     elif grid[y, x] == 6:
                         spread_prob *= 1.5
-                    if random.random() < spread_prob:
+                    if grid[y, x] == 1 and random.random() < spread_prob:
                         new_fire = FireIncidentAgent(x, y, size=1, cause='County Spread', start_day=fire.start_day)
                         new_fires.append(new_fire)
+                        forest = next((fg for fg in forests if fg.grid_x == x and fg.grid_y == y), None)
+                        if forest is not None and forest.status == 1:
+                            forest.ignition_days.append(fire.start_day)
+                            print(f"Rozprzestrzenianie między powiatami do ({x}, {y}), dzień: {fire.start_day}, powiat: {neighbor.name}")
                         if len(total_fires) + len(new_fires) >= 30000:
                             break
-    for nf in new_fires:
-        forest = next((fg for fg in forests if fg.grid_x == nf.grid_x and nf.grid_y == nf.grid_y), None)
-        if forest is not None:
-            forest.ignition_days.append(nf.start_day)
     return new_fires
 
 # ==========================
@@ -481,8 +483,8 @@ for day in range(1, simulation_days + 1):
             grid[city.grid_y, city.grid_x] = 3
     for county in counties.values():
         for fire in county.active_fires:
-            if fire.active:
-                if 0 <= fire.grid_y < grid_height and 0 <= fire.grid_x < grid_width:
+            if fire.active and 0 <= fire.grid_y < grid_height and 0 <= fire.grid_x < grid_width:
+                if grid[fire.grid_y, fire.grid_x] == 1:  # Pożar tylko w lasach
                     grid[fire.grid_y, fire.grid_x] = 2
 
 # ==========================
@@ -510,8 +512,8 @@ rivers_group = folium.FeatureGroup(name='Rivers', show=True)
 mountains_group = folium.FeatureGroup(name='Mountains', show=True)
 roads_group = folium.FeatureGroup(name='Roads', show=True)
 
-forests_subset = random.sample(forests, min(len(forests), 5500))
-for forest in forests_subset:
+# Wyświetlanie wszystkich lasów (bez próbkowania)
+for forest in forests:
     if forest.status == 1:
         lon = forest.grid_x * grid_size + grid_x_min * grid_size
         lat = forest.grid_y * grid_size + grid_y_min * grid_size
@@ -623,7 +625,7 @@ for county in counties.values():
             continue
         lon = fire.grid_x * grid_size + grid_x_min * grid_size
         lat = fire.grid_y * grid_size + grid_y_min * grid_size
-        print(f"Pożar: lon={lon}, lat={lat}, start_day={fire.start_day}, duration={fire.duration}, size={fire.size}")
+        print(f"Pożar: lon={lon}, lat={lat}, start_day={fire.start_day}, duration={fire.duration}, size={fire.size}, cause={fire.cause}")
         if not (41.0 <= lat <= 45.0 and -111.0 <= lon <= -104.0):
             continue
         duration_days = max(5, fire.duration)
@@ -659,13 +661,14 @@ for county in counties.values():
             features.append(feature)
 
 for forest in forests:
-    if forest.status != 1:
+    if forest.status != 1 or not forest.ignition_days:
         continue
     lon = forest.grid_x * grid_size + grid_x_min * grid_size
     lat = forest.grid_y * grid_size + grid_y_min * grid_size
     if not (41.0 <= lat <= 45.0 and -111.0 <= lon <= -104.0):
         continue
     for ign_day in forest.ignition_days:
+        print(f"Palący się las: lon={lon}, lat={lat}, ignition_day={ign_day}")
         for d in range(0, 90):
             day_num = ign_day - 1 + d
             if day_num < 0 or day_num >= simulation_days:
@@ -733,6 +736,7 @@ print(f"Liczba punktów w features (pożary + dynamiczne lasy): {len(features)}"
 print(f"Liczba rzek: {len(rivers)}")
 print(f"Liczba obszarów górskich: {len(mountains)}")
 print(f"Liczba dróg: {len(roads)}")
+print(f"Liczba lasów z ignition_days: {len([f for f in forests if f.ignition_days])}")
 
 # Zapisz mapę
 m.save('wy_fires_simulation_365_with_100rivers_10mountains_150roads.html')
