@@ -4,6 +4,9 @@ import folium
 from folium.plugins import TimestampedGeoJson
 from datetime import datetime, timedelta
 import random
+from roads import road_locations
+from rivers import river_locations
+from mountains import mountain_locations
 
 # ==========================
 # 1. Wczytanie danych
@@ -40,7 +43,7 @@ grid_width = int(grid_x_max - grid_x_min + 1)
 grid_height = int(grid_y_max - grid_y_min + 1)
 
 # Inicjalizacja siatki
-grid = np.zeros((grid_height, grid_width), dtype=int)  # 0=brak, 1=las, 2=pożar, 3=miasto, 4=rzeka, 5=góry
+grid = np.zeros((grid_height, grid_width), dtype=int)  # 0=brak, 1=las, 2=pożar, 3=miasto, 4=rzeka, 5=góry, 6=droga
 
 # ==========================
 # 3. Definicja agentów
@@ -78,6 +81,13 @@ class MountainAgent:
         self.min_y = min_y
         self.max_y = max_y
         self.status = 5  # 5=góry
+
+class RoadAgent:
+    def __init__(self, points, weight, name=""):
+        self.points = points  # Lista krotek (grid_x, grid_y)
+        self.status = 6  # 6=droga
+        self.weight = weight  # 1=autostrada międzystanowa, 2=autostrada stanowa, 3=powiatowa, 4=gminna
+        self.name = name  # Nazwa drogi
 
 class FireIncidentAgent:
     def __init__(self, grid_x, grid_y, size, cause, start_day):
@@ -151,6 +161,7 @@ cities = []
 firefighters = []
 rivers = []
 mountains = []
+roads = []
 
 for fips, group in df.groupby('FIPS_CODE'):
     county_name = group['FIPS_NAME'].iloc[0]
@@ -217,79 +228,7 @@ for lon, lat in city_locations:
     grid_y = int(np.floor(lat / grid_size) - grid_y_min)
     cities.append(CityAgent(grid_x, grid_y))
 
-# Rzeki w Wyoming (100 rzeczywistych rzek)
-river_locations = [
-    # 1. North Platte River
-    [(-106.5, 41.1), (-106.3, 41.5), (-106.1, 42.0), (-105.9, 42.5)],
-    # 2. Green River
-    [(-110.0, 41.5), (-109.8, 41.7), (-109.5, 42.0), (-109.3, 42.3)],
-    # 3. Yellowstone River
-    [(-110.5, 44.5), (-110.3, 44.7), (-110.1, 44.9)],
-    # 4. Snake River
-    [(-110.8, 43.5), (-110.7, 43.7), (-110.6, 44.0)],
-    # 5. Bear River
-    [(-111.0, 41.5), (-110.9, 41.7), (-110.8, 42.0)],
-    # 6. Powder River
-    [(-105.5, 44.0), (-105.3, 44.3), (-105.1, 44.7)],
-    # 7. Wind River
-    [(-108.5, 43.0), (-108.3, 43.3), (-108.1, 43.6)],
-    # 8. Bighorn River
-    [(-108.0, 44.0), (-107.8, 44.3), (-107.6, 44.6)],
-    # 9. Shoshone River
-    [(-109.0, 44.5), (-108.8, 44.6), (-108.6, 44.7)],
-    # 10. Sweetwater River
-    [(-108.5, 42.0), (-108.3, 42.2), (-108.1, 42.4)],
-    # 11. Laramie River
-    [(-105.8, 41.3), (-105.6, 41.6), (-105.4, 42.0)],
-    # 12. Belle Fourche River
-    [(-104.5, 44.5), (-104.3, 44.6), (-104.1, 44.7)],
-    # 13. Little Snake River
-    [(-107.5, 41.0), (-107.3, 41.2), (-107.1, 41.4)],
-    # 14. Popo Agie River
-    [(-108.7, 42.8), (-108.6, 42.9), (-108.5, 43.0)],
-    # 15. Tongue River
-    [(-107.3, 44.8), (-107.2, 44.9), (-107.1, 45.0)],
-    # 16. Greybull River
-    [(-108.5, 44.5), (-108.4, 44.6), (-108.3, 44.7)],
-    # 17. Clarks Fork Yellowstone River
-    [(-109.2, 44.9), (-109.1, 44.8), (-109.0, 44.7)],
-    # 18. Salt River
-    [(-110.9, 42.7), (-110.8, 42.8), (-110.7, 42.9)],
-    # 19. Hams Fork
-    [(-110.7, 42.1), (-110.6, 42.2), (-110.5, 42.3)],
-    # 20. Blacks Fork
-    [(-110.5, 41.5), (-110.4, 41.6), (-110.3, 41.7)],
-    # 21. Henrys Fork
-    [(-110.8, 42.4), (-110.7, 42.5), (-110.6, 42.6)],
-    # 22. Medicine Bow River
-    [(-106.3, 41.2), (-106.2, 41.3), (-106.1, 41.4)],
-    # 23. Encampment River
-    [(-107.0, 41.2), (-106.9, 41.3), (-106.8, 41.4)],
-    # 24. Niobrara River
-    [(-104.5, 42.8), (-104.4, 42.9), (-104.3, 43.0)],
-    # 25. Cheyenne River
-    [(-104.8, 43.0), (-104.7, 43.1), (-104.6, 43.2)]
-]
-
-# Generowanie dodatkowych 75 rzek (dopływów i strumieni)
-main_river_basins = river_locations[:25]  # Główne rzeki jako baza
-for i in range(75):
-    # Wybierz losową główną rzekę jako punkt odniesienia
-    base_river = random.choice(main_river_basins)
-    base_point = random.choice(base_river)  # Losowy punkt z głównej rzeki
-    base_lon, base_lat = base_point
-    # Generuj dopływ w pobliżu głównej rzeki
-    river_points = []
-    num_points = random.randint(3, 4)
-    for j in range(num_points):
-        lon = base_lon + random.uniform(-0.2, 0.2)  # Przesunięcie w granicach ±0.2 stopnia
-        lat = base_lat + random.uniform(-0.2, 0.2)
-        lon = np.clip(lon, -111.0, -104.0)
-        lat = np.clip(lat, 41.0, 45.0)
-        river_points.append((lon, lat))
-        base_lon, base_lat = lon, lat  # Kontynuuj od ostatniego punktu
-    river_locations.append(river_points)
-
+# Inicjalizacja rzek
 rivers = []
 for river_points in river_locations:
     grid_points = []
@@ -299,7 +238,6 @@ for river_points in river_locations:
         if 0 <= grid_x < grid_width and 0 <= grid_y < grid_height:
             grid_points.append((grid_x, grid_y))
     if grid_points:
-        # Rozszerz rzekę na sąsiednie komórki (szerokość rzeki ~2-3 komórki)
         expanded_points = []
         for x, y in grid_points:
             for dx in range(-1, 2):
@@ -309,29 +247,33 @@ for river_points in river_locations:
                         expanded_points.append((nx, ny))
         rivers.append(RiverAgent(expanded_points))
 
-# Góry w Wyoming (10 rzeczywistych pasm górskich)
-mountain_locations = [
-    # 1. Teton Range
-    {'lon_min': -110.9, 'lon_max': -110.5, 'lat_min': 43.5, 'lat_max': 44.0},
-    # 2. Bighorn Mountains
-    {'lon_min': -107.5, 'lon_max': -106.8, 'lat_min': 44.0, 'lat_max': 44.8},
-    # 3. Medicine Bow Mountains
-    {'lon_min': -106.5, 'lon_max': -106.0, 'lat_min': 41.0, 'lat_max': 41.5},
-    # 4. Absaroka Range
-    {'lon_min': -110.0, 'lon_max': -109.5, 'lat_min': 44.0, 'lat_max': 44.7},
-    # 5. Wind River Range
-    {'lon_min': -109.5, 'lon_max': -108.8, 'lat_min': 42.5, 'lat_max': 43.2},
-    # 6. Gros Ventre Range
-    {'lon_min': -110.5, 'lon_max': -110.0, 'lat_min': 43.2, 'lat_max': 43.5},
-    # 7. Salt River Range
-    {'lon_min': -111.0, 'lon_max': -110.7, 'lat_min': 42.5, 'lat_max': 43.0},
-    # 8. Wyoming Range
-    {'lon_min': -110.8, 'lon_max': -110.4, 'lat_min': 42.0, 'lat_max': 42.5},
-    # 9. Laramie Mountains
-    {'lon_min': -105.8, 'lon_max': -105.3, 'lat_min': 41.5, 'lat_max': 42.0},
-    # 10. Sierra Madre
-    {'lon_min': -107.0, 'lon_max': -106.5, 'lat_min': 41.0, 'lat_max': 41.3}
-]
+# Inicjalizacja dróg
+roads = []
+for road in road_locations:
+    grid_points = []
+    for lon, lat in road['points']:
+        grid_x = int(np.floor(lon / grid_size) - grid_x_min)
+        grid_y = int(np.floor(lat / grid_size) - grid_y_min)
+        if 0 <= grid_x < grid_width and 0 <= grid_y < grid_height:
+            grid_points.append((grid_x, grid_y))
+    if grid_points:
+        expanded_points = []
+        for x, y in grid_points:
+            range_x = 2 if road['weight'] == 1 else 1
+            range_y = 2 if road['weight'] == 1 else 1
+            for dx in range(-range_x, range_x + 1):
+                for dy in range(-range_y, range_y + 1):
+                    nx, ny = x + dx, y + dy
+                    if 0 <= nx < grid_width and 0 <= ny < grid_height:
+                        expanded_points.append((nx, ny))
+        roads.append(RoadAgent(expanded_points, road['weight'], road['name']))
+
+# Debugowanie liczby dróg
+print(f"Liczba dodanych dróg: {len(roads)}")
+for road in roads:
+    print(f"Droga: {road.name}, Typ: {road.weight}, Punkty: {len(road.points)}")
+
+# Inicjalizacja gór
 mountains = []
 for mountain in mountain_locations:
     min_x = int(np.floor(mountain['lon_min'] / grid_size) - grid_x_min)
@@ -389,9 +331,11 @@ def spread_fire(fire, grid, weather, counties, total_fires):
         if 0 <= nx < grid_width and 0 <= ny < grid_height:
             spread_prob = weather.fire_spread_probability() * 0.5
             if grid[ny, nx] == 4:  # Rzeka
-                spread_prob *= 0.3  # 70% redukcja prawdopodobieństwa
+                spread_prob *= 0.3  # 70% redukcja
             elif grid[ny, nx] == 5:  # Góry
-                spread_prob *= 1.2  # 20% zwiększenie prawdopodobieństwa
+                spread_prob *= 1.2  # 20% zwiększenie
+            elif grid[ny, nx] == 6:  # Droga
+                spread_prob *= 0.9  # 50% redukcja
             if grid[ny, nx] == 1 and random.random() < spread_prob:
                 new_fire = FireIncidentAgent(nx, ny, size=1, cause='Spread', start_day=fire.start_day)
                 new_fires.append(new_fire)
@@ -412,19 +356,20 @@ def spread_fire(fire, grid, weather, counties, total_fires):
                 forest_cells = [(f.grid_x, f.grid_y) for f in forests if f.status == 1]
                 if forest_cells:
                     x, y = random.choice(forest_cells)
-                    # Sprawdź, czy nowa lokalizacja nie jest rzeką ani górami
                     spread_prob = weather.fire_spread_probability()
                     if grid[y, x] == 4:
                         spread_prob *= 0.3
                     elif grid[y, x] == 5:
                         spread_prob *= 1.2
+                    elif grid[y, x] == 6:
+                        spread_prob *= 1.5
                     if random.random() < spread_prob:
                         new_fire = FireIncidentAgent(x, y, size=1, cause='County Spread', start_day=fire.start_day)
                         new_fires.append(new_fire)
                         if len(total_fires) + len(new_fires) >= 30000:
                             break
     for nf in new_fires:
-        forest = next((fg for fg in forests if fg.grid_x == nf.grid_x and fg.grid_y == nf.grid_y), None)
+        forest = next((fg for fg in forests if fg.grid_x == nf.grid_x and nf.grid_y == nf.grid_y), None)
         if forest is not None:
             forest.ignition_days.append(nf.start_day)
     return new_fires
@@ -435,7 +380,7 @@ def spread_fire(fire, grid, weather, counties, total_fires):
 simulation_days = 365
 all_fires = []
 
-# Ustawienie rzek i gór na siatce przed symulacją
+# Ustawienie rzek, gór i dróg na siatce przed symulacją
 for river in rivers:
     for x, y in river.points:
         if 0 <= x < grid_width and 0 <= y < grid_height:
@@ -445,6 +390,10 @@ for mountain in mountains:
         for y in range(mountain.min_y, mountain.max_y + 1):
             if 0 <= x < grid_width and 0 <= y < grid_height:
                 grid[y, x] = 5
+for road in roads:
+    for x, y in road.points:
+        if 0 <= x < grid_width and 0 <= y < grid_height:
+            grid[y, x] = 6
 
 for day in range(1, simulation_days + 1):
     print(f"Symulacja: dzień {day}, liczba pożarów: {len(all_fires)}")
@@ -484,10 +433,14 @@ for day in range(1, simulation_days + 1):
             for y in range(mountain.min_y, mountain.max_y + 1):
                 if 0 <= x < grid_width and 0 <= y < grid_height:
                     grid[y, x] = 5
+    for road in roads:
+        for x, y in road.points:
+            if 0 <= x < grid_width and 0 <= y < grid_height:
+                grid[y, x] = 6
     for f_agent in forests:
         if f_agent.status == 1:
             if 0 <= f_agent.grid_y < grid_height and 0 <= f_agent.grid_x < grid_width:
-                if grid[f_agent.grid_y, f_agent.grid_x] not in [4, 5]:  # Lasy nie nadpisują rzek ani gór
+                if grid[f_agent.grid_y, f_agent.grid_x] not in [4, 5, 6]:
                     grid[f_agent.grid_y, f_agent.grid_x] = 1
     for city in cities:
         if 0 <= city.grid_y < grid_height and 0 <= city.grid_x < grid_width:
@@ -522,6 +475,7 @@ cities_group = folium.FeatureGroup(name='Cities', show=True)
 firestations_group = folium.FeatureGroup(name='Fire Stations', show=True)
 rivers_group = folium.FeatureGroup(name='Rivers', show=True)
 mountains_group = folium.FeatureGroup(name='Mountains', show=True)
+roads_group = folium.FeatureGroup(name='Roads', show=True)
 
 # Lasy (statyczne, niski zIndex)
 forests_subset = random.sample(forests, min(len(forests), 5500))
@@ -558,7 +512,7 @@ for city in cities:
         fill_opacity=0.8,
         weight=1,
         popup=f"City at ({city.grid_x}, {city.grid_y})",
-        zIndexOffset=300
+        zIndexOffset=800
     ).add_to(cities_group)
 
 # Remizy strażackie (statyczne, wyższy zIndex)
@@ -609,12 +563,32 @@ for mountain in mountains:
         zIndexOffset=50
     ).add_to(mountains_group)
 
+# Drogi (statyczne, niski zIndex)
+road_colors = {
+    1: '#FFD700',  # Złoty dla autostrad międzystanowych
+    2: '#FFA500',  # Pomarańczowy dla autostrad stanowych
+    3: '#FFFF99',  # Jasnożółty dla dróg powiatowych
+    4: '#FFFACD'   # Bardzo jasnożółty dla dróg gminnych
+}
+for road in roads:
+    geo_points = [(y * grid_size + grid_y_min * grid_size, x * grid_size + grid_x_min * grid_size) for x, y in road.points]
+    if geo_points:
+        folium.PolyLine(
+            locations=geo_points,
+            color=road_colors[road.weight],
+            weight=3 if road.weight in [1, 2] else 2,
+            opacity=0.7,
+            popup=f"Road: {road.name} (Type {road.weight})",
+            zIndexOffset=75
+        ).add_to(roads_group)
+
 # Dodanie statycznych warstw do mapy
 forests_group.add_to(m)
 cities_group.add_to(m)
 firestations_group.add_to(m)
 rivers_group.add_to(m)
 mountains_group.add_to(m)
+roads_group.add_to(m)
 
 # Pożary (dynamiczne, najwyższy zIndex)
 features = []
@@ -628,7 +602,7 @@ for county in counties.values():
         if not (41.0 <= lat <= 45.0 and -111.0 <= lon <= -104.0):
             continue
         duration_days = max(5, fire.duration)
-        max_radius = min(25, max(1, fire.size / 6))  # Zmniejszony promień
+        max_radius = min(25, max(1, fire.size / 6))
         for day in range(duration_days + 1):
             current_date = datetime(2015, 1, 1) + timedelta(days=fire.start_day - 1 + day)
             timestamp = current_date.isoformat()
@@ -736,7 +710,8 @@ print(f"Liczba wygenerowanych remiz: {len(firefighters)}")
 print(f"Liczba punktów w features (pożary + dynamiczne lasy): {len(features)}")
 print(f"Liczba rzek: {len(rivers)}")
 print(f"Liczba obszarów górskich: {len(mountains)}")
+print(f"Liczba dróg: {len(roads)}")
 
 # Zapisz mapę
-m.save('wy_fires_simulation_365_with_100rivers_10mountains.html')
-print(f"Symulacja zapisana jako 'wy_fires_simulation_365_with_100rivers_10mountains.html'. Liczba pożarów: {len(all_fires)}")
+m.save('wy_fires_simulation_365_with_100rivers_10mountains_150roads.html')
+print(f"Symulacja zapisana jako 'wy_fires_simulation_365_with_100rivers_10mountains_150roads.html'. Liczba pożarów: {len(all_fires)}")

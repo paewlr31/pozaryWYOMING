@@ -9,10 +9,12 @@ NIE POZARY W WYOMING TYLKO LASY INICJUJACE POZARY W WYOMING TO TROCHE CO INNEGO
 4. góry - utrudniaja rozprzestrzenianie sie
 
 5. Mozna dodac zeby pogoda miala wiekszy wplyw na rozprzestrzenianie sie pozarow
-6. Mozna dodac zeby pojazdy mialy wiekszy wplyw na gaszenie pozarow
+6. Dodac drogi
 
-7. dodac pojazy ktore jezdza po drogach do pozarow z poblikskich remiz (duzo pojazdów) 
+7. Dodac pojazy ktore jezdza po drogach do pozarow z poblikskich remiz (duzo pojazdów) 
 jak pozar trw adłuzej to wtedywiecej pojazdów z czasem potem odjezdzaja jak ze zmienianiem promienia)
-8. zmniejszyc interwały do 6h - godziinnych
+8. Dodac wplyw ludzi
+9. Mozna dodac zeby pojazdy mialy wiekszy wplyw na gaszenie pozarow
+10. zmniejszyc interwały do 6h - godziinnych
 
 #latex
