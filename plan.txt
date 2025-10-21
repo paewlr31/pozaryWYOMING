@@ -1,15 +1,18 @@
-jesli sie pali to zmieniamy kolor kropek lasow w danym regionie na pomaranczowy a potem wracay do zielonego
+1. jesli sie pali to zmieniamy kolor kropek lasow w danym regionie na pomaranczowy a potem wracay do zielonego
  ale dopeiro po 90 dniach (pamietamy dzien kiedy sie dana kropka zapaliła dodajemy 90 i kiedy data sie pokryje 
  to znowu robimy zielona tylko tyle) po prostu zapamietaj date zapalenia
 
-#rzeki - utrudniaja rozprzestrzenianie sie 
-#góry - utrudniaja rozprzestrzenianie sie
+2. Zmieniaja sie kolory w pewnym zakresie(range nie tylko ten jeden) - zmiana tematu (!!!)
+NIE POZARY W WYOMING TYLKO LASY INICJUJACE POZARY W WYOMING TO TROCHE CO INNEGO
 
-#mozna dodac zeby pogoda miala wiekszy wplyw na rozprzestrzenianie sie pozarow
-#mozna dodac zeby pojazdy mialy wiekszy wplyw na gaszenie pozarow
+3. rzeki - utrudniaja rozprzestrzenianie sie 
+4. góry - utrudniaja rozprzestrzenianie sie
 
-dodac pojazy ktore jezdza po drogach do pozarow z poblikskich remiz (duzo pojazdów) 
+5. Mozna dodac zeby pogoda miala wiekszy wplyw na rozprzestrzenianie sie pozarow
+6. Mozna dodac zeby pojazdy mialy wiekszy wplyw na gaszenie pozarow
+
+7. dodac pojazy ktore jezdza po drogach do pozarow z poblikskich remiz (duzo pojazdów) 
 jak pozar trw adłuzej to wtedywiecej pojazdów z czasem potem odjezdzaja jak ze zmienianiem promienia)
-zmniejszyc interwały do 6h - godziinnych
+8. zmniejszyc interwały do 6h - godziinnych
 
 #latex
