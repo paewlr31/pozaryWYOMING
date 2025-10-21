@@ -1,9 +1,20 @@
+# Bazy danych
 /FPA_FOD_20170508.sqlite
 *.sqlite
 *.db
 *.db3
 
+# Dane i raporty
 wildfires.csv
 *.csv
 *.json
 *.html
+
+# Cache Pythona
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Inne cache
+cache/
