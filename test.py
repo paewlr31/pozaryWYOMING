@@ -16,8 +16,8 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('simulation_logs.txt', mode='w'),  # Nadpisywanie pliku
-        logging.StreamHandler()  # Wyświetlanie w konsoli
+        logging.FileHandler('simulation_logs.txt', mode='w'),
+        logging.StreamHandler()
     ]
 )
 logger = logging.getLogger()
@@ -32,11 +32,23 @@ df = df[['FIRE_YEAR', 'DISCOVERY_DOY', 'CONT_DOY', 'LATITUDE', 'LONGITUDE', 'FIR
 df = df[df['STATE'] == 'WY']
 df = df[df['LATITUDE'].notna() & df['LONGITUDE'].notna()]
 
-# Poprawka dla DURATION: zapewnienie dodatnich wartości
+# Poprawka dla DURATION
 df['DURATION'] = df['CONT_DOY'].fillna(df['DISCOVERY_DOY'] + 5) - df['DISCOVERY_DOY']
-df['DURATION'] = df['DURATION'].apply(lambda x: max(1, x))  # Minimalna długość trwania: 1 dzień
+df['DURATION'] = df['DURATION'].apply(lambda x: max(1, x))
 avg_duration = df['DURATION'].mean()
 std_duration = df['DURATION'].std()
+
+# DODANO: Analiza przyczyn pożarów
+human_causes = ['Arson', 'Campfire', 'Children', 'Equipment Use', 'Fireworks', 'Railroad', 'Smoking', 'Debris Burning', 'Powerline']
+df['CAUSE_TYPE'] = df['STAT_CAUSE_DESCR'].apply(
+    lambda x: 'Human' if x in human_causes else 'Lightning' if x == 'Lightning' else 'Other'
+)
+# Rozkład przyczyn na podstawie zadanego zakresu
+human_fire_ratio = 0.70  # 70% ludzkie
+lightning_fire_ratio = 0.20  # 20% pioruny
+other_fire_ratio = 0.10  # 10% inne
+logger.info("Założony rozkład przyczyn: Human=%.2f%%, Lightning=%.2f%%, Other=%.2f%%",
+            human_fire_ratio * 100, lightning_fire_ratio * 100, other_fire_ratio * 100)
 
 # Debugowanie danych DURATION
 logger.info("Min DURATION: %s", df['DURATION'].min())
@@ -56,7 +68,6 @@ grid_y_min, grid_y_max = df['grid_y'].min(), df['grid_y'].max()
 grid_width = int(grid_x_max - grid_x_min + 1)
 grid_height = int(grid_y_max - grid_y_min + 1)
 
-# Inicjalizacja siatki
 grid = np.zeros((grid_height, grid_width), dtype=int)  # 0=brak, 1=las, 2=pożar, 3=miasto, 4=rzeka, 5=góry, 6=droga
 
 # ==========================
@@ -139,23 +150,24 @@ class FireIncidentAgent:
         self.active = True
         self.start_day = start_day
         self.duration = max(5, int(np.random.normal(avg_duration, std_duration)))
-        self.assigned_resources = []  # Lista przypisanych ResourceAgent
+        self.assigned_resources = []
+        self.spread_influences = []
 
 class ResourceAgent:
     def __init__(self, resource_type, grid_x, grid_y, home_station, speed, range_cells, effectiveness):
-        self.resource_type = resource_type  # 'truck' lub 'airplane'
-        self.grid_x = grid_x  # Aktualna pozycja
+        self.resource_type = resource_type
+        self.grid_x = grid_x
         self.grid_y = grid_y
-        self.home_station = home_station  # Referencja do FirefighterAgent
-        self.speed = speed  # Komórki na dzień
-        self.range_cells = range_cells  # Maksymalny zasięg
-        self.effectiveness = effectiveness  # Skuteczność gaszenia
-        self.status = 'idle'  # 'idle', 'moving', 'fighting', 'returning'
-        self.target_fire = None  # Cel (pożar)
-        self.days_traveling = 0  # Czas podróży
-        self.days_fighting = 0  # Czas gaszenia
-        self.path = []  # Ścieżka ruchu
-        self.returning = False  # Czy wraca do bazy
+        self.home_station = home_station
+        self.speed = speed
+        self.range_cells = range_cells
+        self.effectiveness = effectiveness
+        self.status = 'idle'
+        self.target_fire = None
+        self.days_traveling = 0
+        self.days_fighting = 0
+        self.path = []
+        self.returning = False
 
     def move_towards(self, target_x, target_y, day, grid):
         if self.status not in ['moving', 'returning'] or (self.returning and self.target_fire is None):
@@ -165,7 +177,7 @@ class ResourceAgent:
         speed = self.speed
         if self.resource_type == 'truck' and 0 <= self.grid_y < grid_height and 0 <= self.grid_x < grid_width:
             if grid[self.grid_y, self.grid_x] == 6:
-                speed *= 1.5  # 50% szybciej na drogach
+                speed *= 1.5
         if distance <= speed:
             self.grid_x, self.grid_y = target
             self.path.append((self.grid_x, self.grid_y))
@@ -173,7 +185,7 @@ class ResourceAgent:
                 self.status = 'idle'
                 self.target_fire = None
                 self.returning = False
-                self.path = []  # Reset ścieżki
+                self.path = []
                 logger.info("%s z remizy (%s, %s) wrócił do bazy.", self.resource_type, self.home_station.grid_x, self.home_station.grid_y)
             else:
                 self.status = 'fighting'
@@ -294,13 +306,21 @@ class RegionAgent:
             if random.random() < base_ignition_prob:
                 x, y = random.choice(forest_cells)
                 if random.random() < weather.fire_spread_probability() and grid[y, x] == 1:
-                    fire = FireIncidentAgent(x, y, size=1, cause='Monte Carlo (Human Influenced)', start_day=day)
+                    # DODANO: Losowanie przyczyny zgodnie z zadanym rozkładem
+                    rand = random.random()
+                    if rand < human_fire_ratio:
+                        cause = 'Human'
+                    elif rand < human_fire_ratio + lightning_fire_ratio:
+                        cause = 'Lightning'
+                    else:
+                        cause = 'Other'
+                    fire = FireIncidentAgent(x, y, size=1, cause=cause, start_day=day)
                     county.active_fires.append(fire)
                     total_fires.append(fire)
                     forest = next((fg for fg in forests if fg.grid_x == x and fg.grid_y == y), None)
                     if forest is not None and forest.status == 1:
                         forest.ignition_days.append(day)
-                        logger.info("Zapłon lasu w (%s, %s), dzień: %s, powiat: %s", x, y, day, county.name)
+                        logger.info("Zapłon lasu w (%s, %s), dzień: %s, powiat: %s, przyczyna: %s", x, y, day, county.name, cause)
 
 # ==========================
 # 4. Inicjalizacja agentów
@@ -459,14 +479,22 @@ def spread_fire(fire, grid, weather, counties, total_fires):
         nx, ny = fire.grid_x + dx, fire.grid_y + dy
         if 0 <= nx < grid_width and 0 <= ny < grid_height:
             spread_prob = weather.fire_spread_probability() * 0.5 * human_risk
+            influences = ['WeatherAgent', 'HumanActivityAgent']
+            # DODANO: Logowanie dla debugowania
+            if grid[ny, nx] in [4, 5, 6]:
+                logger.info("Sąsiednia komórka (%s, %s) ma status %s", nx, ny, grid[ny, nx])
             if grid[ny, nx] == 4:
-                spread_prob *= 0.3
+                spread_prob *= 0.5  # Zwiększono z 0.3
+                influences.append('RiverAgent')
             elif grid[ny, nx] == 5:
-                spread_prob *= 1.2
+                spread_prob *= 1.5  # Zwiększono z 1.2
+                influences.append('MountainAgent')
             elif grid[ny, nx] == 6:
-                spread_prob *= 0.9
+                spread_prob *= 1.2  # Zwiększono z 0.9
+                influences.append('RoadAgent')
             if grid[ny, nx] == 1 and random.random() < spread_prob:
                 new_fire = FireIncidentAgent(nx, ny, size=1, cause='Spread', start_day=fire.start_day)
+                new_fire.spread_influences = influences
                 new_fires.append(new_fire)
                 forest = next((fg for fg in forests if fg.grid_x == nx and fg.grid_y == ny), None)
                 if forest is not None and forest.status == 1:
@@ -483,14 +511,22 @@ def spread_fire(fire, grid, weather, counties, total_fires):
                 if forest_cells:
                     x, y = random.choice(forest_cells)
                     spread_prob = weather.fire_spread_probability() * neighbor.human_activity.fire_risk_multiplier
+                    influences = ['WeatherAgent', 'HumanActivityAgent']
+                    # DODANO: Logowanie dla debugowania
+                    if grid[y, x] in [4, 5, 6]:
+                        logger.info("Komórka między powiatami (%s, %s) ma status %s", x, y, grid[y, x])
                     if grid[y, x] == 4:
-                        spread_prob *= 0.3
+                        spread_prob *= 0.5  # Zwiększono z 0.3
+                        influences.append('RiverAgent')
                     elif grid[y, x] == 5:
-                        spread_prob *= 1.2
+                        spread_prob *= 1.5  # Zwiększono z 1.2
+                        influences.append('MountainAgent')
                     elif grid[y, x] == 6:
-                        spread_prob *= 1.5
+                        spread_prob *= 2.0  # Zwiększono z 1.5
+                        influences.append('RoadAgent')
                     if grid[y, x] == 1 and random.random() < spread_prob:
                         new_fire = FireIncidentAgent(x, y, size=1, cause='County Spread', start_day=fire.start_day)
+                        new_fire.spread_influences = influences
                         new_fires.append(new_fire)
                         forest = next((fg for fg in forests if fg.grid_x == x and fg.grid_y == y), None)
                         if forest is not None and forest.status == 1:
@@ -598,7 +634,58 @@ for day in range(1, simulation_days + 1):
                     grid[fire.grid_y, fire.grid_x] = 2
 
 # ==========================
-# 7. Wizualizacja mapowa (Folium)
+# 7. Zapis statystyk do pliku
+# ==========================
+total_fires = len(all_fires)
+if total_fires > 0:
+    human_fires = sum(1 for fire in all_fires if fire.cause == 'Human')
+    lightning_fires = sum(1 for fire in all_fires if fire.cause == 'Lightning')
+    other_fires = sum(1 for fire in all_fires if fire.cause == 'Other')
+    spread_fires = sum(1 for fire in all_fires if fire.cause == 'Spread')
+    county_spread_fires = sum(1 for fire in all_fires if fire.cause == 'County Spread')
+
+    human_percent = (human_fires / total_fires) * 100
+    lightning_percent = (lightning_fires / total_fires) * 100
+    other_percent = (other_fires / total_fires) * 100
+    spread_percent = (spread_fires / total_fires) * 100
+    county_spread_percent = (county_spread_fires / total_fires) * 100
+
+    weather_influenced = sum(1 for fire in all_fires if 'WeatherAgent' in getattr(fire, 'spread_influences', []))
+    human_activity_influenced = sum(1 for fire in all_fires if 'HumanActivityAgent' in getattr(fire, 'spread_influences', []))
+    river_influenced = sum(1 for fire in all_fires if 'RiverAgent' in getattr(fire, 'spread_influences', []))
+    mountain_influenced = sum(1 for fire in all_fires if 'MountainAgent' in getattr(fire, 'spread_influences', []))
+    road_influenced = sum(1 for fire in all_fires if 'RoadAgent' in getattr(fire, 'spread_influences', []))
+
+    weather_percent = (weather_influenced / total_fires) * 100 if total_fires > 0 else 0
+    human_activity_percent = (human_activity_influenced / total_fires) * 100 if total_fires > 0 else 0
+    river_percent = (river_influenced / total_fires) * 100 if total_fires > 0 else 0
+    mountain_percent = (mountain_influenced / total_fires) * 100 if total_fires > 0 else 0
+    road_percent = (road_influenced / total_fires) * 100 if total_fires > 0 else 0
+
+    with open('simulation_summary.txt', 'w') as f:
+        f.write("=== Podsumowanie symulacji pożarów ===\n\n")
+        f.write(f"Całkowita liczba pożarów: {total_fires}\n\n")
+        f.write("Procent pożarów wywołanych przez różne mechanizmy:\n")
+        f.write(f"  - Wywołane przez człowieka (Human): {human_percent:.2f}%\n")
+        f.write(f"  - Wywołane przez pioruny (Lightning): {lightning_percent:.2f}%\n")
+        f.write(f"  - Nieustalone/inne (Other): {other_percent:.2f}%\n")
+        f.write(f"  - Rozprzestrzenianie lokalne (automat komórkowy): {spread_percent:.2f}%\n")
+        f.write(f"  - Rozprzestrzenianie między powiatami (automat komórkowy): {county_spread_percent:.2f}%\n\n")
+        f.write("Procent pożarów podtrzymywanych przez agentów:\n")
+        f.write(f"  - WeatherAgent: {weather_percent:.2f}% (pogoda wpłynęła na rozprzestrzenianie)\n")
+        f.write(f"  - HumanActivityAgent: {human_activity_percent:.2f}% (aktywność ludzka wpłynęła na rozprzestrzenianie)\n")
+        f.write(f"  - RiverAgent: {river_percent:.2f}% (rozprzestrzenianie w pobliżu rzek)\n")
+        f.write(f"  - MountainAgent: {mountain_percent:.2f}% (rozprzestrzenianie w górach)\n")
+        f.write(f"  - RoadAgent: {road_percent:.2f}% (rozprzestrzenianie w pobliżu dróg)\n")
+    logger.info("Zapisano podsumowanie statystyk do pliku 'simulation_summary.txt'.")
+else:
+    with open('simulation_summary.txt', 'w') as f:
+        f.write("=== Podsumowanie symulacji pożarów ===\n\n")
+        f.write("Brak pożarów w symulacji.\n")
+    logger.info("Zapisano podsumowanie statystyk do pliku 'simulation_summary.txt' (brak pożarów).")
+
+# ==========================
+# 8. Wizualizacja mapowa (Folium)
 # ==========================
 m = folium.Map(
     location=[43.0, -107.5],
