@@ -1,0 +1,37 @@
+=== Wyniki walidacji symulacji ===
+
+Rok symulacji: 2015
+Ca³kowita liczba po¿arów symulowanych: 1259
+Ca³kowita liczba po¿arów rzeczywistych (dla roku 2015): 632
+
+1. Przestrzenne pokrycie:
+  - Procent po¿arów symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 11.04%
+  - Liczba dopasowanych po¿arów: 139
+
+2. Rozk³ad przyczyn po¿arów (%):
+  - Human:
+      Rzeczywiste: 39.72%
+      Symulowane: 3.67%
+  - Lightning:
+      Rzeczywiste: 34.65%
+      Symulowane: 1.28%
+  - Other:
+      Rzeczywiste: 25.63%
+      Symulowane: 0.80%
+  - Spread:
+      Rzeczywiste: 0.00%
+      Symulowane: 94.26%
+
+3. Rozmiar po¿arów:
+  - Œredni rozmiar rzeczywisty: 58.26 akrów
+  - Œredni rozmiar symulowany: 54.44 akrów
+  - Œredni b³¹d bezwzglêdny (MAE): 97.14 akrów
+
+4. Czas trwania po¿arów:
+  - Œredni czas trwania rzeczywisty: 1.95 dni
+  - Œredni czas trwania symulowany: 5.74 dni
+  - Œredni b³¹d bezwzglêdny (MAE): 4.89 dni
+
+5. Pokrycie czasowe:
+  - Procent po¿arów symulowanych w oknie ±7 dni od rzeczywistych: 100.00%
+  - Liczba dopasowanych po¿arów czasowo: 1254
