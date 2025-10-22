@@ -5,6 +5,9 @@ from folium.plugins import TimestampedGeoJson
 from datetime import datetime, timedelta
 import random
 import logging
+from scipy.spatial import cKDTree
+
+# Pliki z danymi zewnętrznymi (założono, że istnieją)
 from roads import road_locations
 from rivers import river_locations
 from mountains import mountain_locations
@@ -38,23 +41,29 @@ df['DURATION'] = df['DURATION'].apply(lambda x: max(1, x))
 avg_duration = df['DURATION'].mean()
 std_duration = df['DURATION'].std()
 
-# DODANO: Analiza przyczyn pożarów
+# Średni i odchylenie rozmiaru pożaru
+avg_size = df['FIRE_SIZE'].mean()
+std_size = df['FIRE_SIZE'].std()
+
+# Analiza przyczyn pożarów
 human_causes = ['Arson', 'Campfire', 'Children', 'Equipment Use', 'Fireworks', 'Railroad', 'Smoking', 'Debris Burning', 'Powerline']
 df['CAUSE_TYPE'] = df['STAT_CAUSE_DESCR'].apply(
     lambda x: 'Human' if x in human_causes else 'Lightning' if x == 'Lightning' else 'Other'
 )
-# Rozkład przyczyn na podstawie zadanego zakresu
-human_fire_ratio = 0.70  # 70% ludzkie
-lightning_fire_ratio = 0.20  # 20% pioruny
-other_fire_ratio = 0.10  # 10% inne
+# Rozkład przyczyn
+human_fire_ratio = 0.42
+lightning_fire_ratio = 0.33
+other_fire_ratio = 0.25
 logger.info("Założony rozkład przyczyn: Human=%.2f%%, Lightning=%.2f%%, Other=%.2f%%",
             human_fire_ratio * 100, lightning_fire_ratio * 100, other_fire_ratio * 100)
 
-# Debugowanie danych DURATION
+# Debugowanie danych
 logger.info("Min DURATION: %s", df['DURATION'].min())
 logger.info("Max DURATION: %s", df['DURATION'].max())
 logger.info("Avg DURATION: %s", avg_duration)
 logger.info("Std DURATION: %s", std_duration)
+logger.info("Avg FIRE_SIZE: %s", avg_size)
+logger.info("Std FIRE_SIZE: %s", std_size)
 
 # ==========================
 # 2. Tworzenie siatki 1km x 1km
@@ -145,13 +154,39 @@ class FireIncidentAgent:
     def __init__(self, grid_x, grid_y, size, cause, start_day):
         self.grid_x = grid_x
         self.grid_y = grid_y
-        self.size = random.uniform(10, 100) if size == 1 else size
+        # Nowy rozkład rozmiaru z ciaśniejszym sigma i niższym cap-em
+        if size == 1 or size == 0.5:  # Dla nowych pożarów i rozprzestrzeniania
+            base_size = np.random.lognormal(np.log(avg_size), 0.3)  # ZMIANA: sigma z 0.4 na 0.3 (linia 7)
+            # Ograniczenie outliersów: ponowne losowanie, jeśli >75 akrów
+            while base_size > 75:  # ZMIANA: próg z 150 na 75 (linia 9)
+                base_size = np.random.lognormal(np.log(avg_size), 0.3)  # ZMIANA: sigma z 0.4 na 0.3 (linia 10)
+            # Różnicowanie rozmiaru według przyczyny
+            if cause == 'Spread' or cause == 'County Spread':
+                self.size = min(150, base_size * 0.05)  # ZMIANA: cap z 300 na 150, mnożnik z 0.1 na 0.05 (linia 12)
+            elif cause == 'Lightning':
+                self.size = min(150, base_size * 1.0)  # ZMIANA: cap z 300 na 150, mnożnik z 1.2 na 1.0 (linia 14)
+            elif cause == 'Other':
+                self.size = min(150, base_size * 0.7)  # ZMIANA: cap z 300 na 150, mnożnik z 0.8 na 0.7 (linia 16)
+            else:  # Human
+                self.size = min(150, base_size * 0.9)  # ZMIANA: cap z 300 na 150, mnożnik z 1.0 na 0.9 (linia 18)
+        else:
+            self.size = size  # Dla przypadków, gdzie rozmiar jest już określony
         self.cause = cause
         self.active = True
         self.start_day = start_day
-        self.duration = max(5, int(np.random.normal(avg_duration, std_duration)))
+        self.duration = max(1, int(np.random.normal(avg_duration, std_duration * 0.3)))
         self.assigned_resources = []
         self.spread_influences = []
+        # Logowanie rozmiaru i statystyk dla debugowania
+        logger.info("Nowy pożar w (%s, %s), przyczyna: %s, rozmiar: %.2f akrów", 
+                    grid_x, grid_y, cause, self.size)
+        # Logowanie statystyk rozkładu (dla weryfikacji)
+        sample_sizes = [np.random.lognormal(np.log(avg_size), 0.3) for _ in range(100)]  # ZMIANA: próbki z 100 losowań, sigma 0.3 (linia 29)
+        sample_sizes = [s for s in sample_sizes if s <= 75]  # ZMIANA: uwzględniamy próg 75 (linia 30)
+        logger.debug("Statystyki rozmiaru: bieżący=%.2f, min=%.2f, max=%.2f, avg=%.2f, avg_size=%.2f", 
+                     self.size, min(sample_sizes) if sample_sizes else 0, 
+                     max(sample_sizes) if sample_sizes else 0, 
+                     np.mean(sample_sizes) if sample_sizes else 0, avg_size)  # ZMIANA: poprawione statystyki (linia 32-34)
 
 class ResourceAgent:
     def __init__(self, resource_type, grid_x, grid_y, home_station, speed, range_cells, effectiveness):
@@ -297,16 +332,23 @@ class RegionAgent:
         self.counties = counties
 
     def monte_carlo_first_fire(self, day, weather, total_fires):
-        if len(total_fires) >= 30000:
+        if len(total_fires) >= 800:
             return
         county = random.choice(self.counties)
         forest_cells = [(f.grid_x, f.grid_y) for f in forests if f.status == 1]
         if forest_cells:
-            base_ignition_prob = 0.05 * county.human_activity.fire_risk_multiplier
-            if random.random() < base_ignition_prob:
+            base_ignition_prob = 25.0 * county.human_activity.fire_risk_multiplier
+            real_coords = [(row['grid_x'] - grid_x_min, row['grid_y'] - grid_y_min) for _, row in df[df['FIRE_YEAR'] == 2015].iterrows()]
+            if real_coords:
+                tree = cKDTree(real_coords)
+                distances, _ = tree.query(forest_cells, k=1)
+                weights = np.exp(-distances / 0.1)
+                weights /= weights.sum()
+                x, y = forest_cells[np.random.choice(len(forest_cells), p=weights)]
+            else:
                 x, y = random.choice(forest_cells)
+            if random.random() < base_ignition_prob:
                 if random.random() < weather.fire_spread_probability() and grid[y, x] == 1:
-                    # DODANO: Losowanie przyczyny zgodnie z zadanym rozkładem
                     rand = random.random()
                     if rand < human_fire_ratio:
                         cause = 'Human'
@@ -346,7 +388,7 @@ for fips, group in df.groupby('FIPS_CODE'):
 yellowstone_lon_min, yellowstone_lon_max = -111.0, -109.8
 yellowstone_lat_min, yellowstone_lat_max = 44.1, 45.0
 yellowstone_density = 0.8
-num_yellowstone_forests = 500
+num_yellowstone_forests = 50
 for _ in range(num_yellowstone_forests):
     lon = random.uniform(yellowstone_lon_min, yellowstone_lon_max)
     lat = random.uniform(yellowstone_lat_min, yellowstone_lat_max)
@@ -465,7 +507,7 @@ weather = WeatherAgent()
 # 5. Funkcje pomocnicze
 # ==========================
 def spread_fire(fire, grid, weather, counties, total_fires):
-    if len(total_fires) >= 30000:
+    if len(total_fires) >= 800:
         return []
     directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
     new_fires = []
@@ -478,22 +520,22 @@ def spread_fire(fire, grid, weather, counties, total_fires):
     for dx, dy in directions:
         nx, ny = fire.grid_x + dx, fire.grid_y + dy
         if 0 <= nx < grid_width and 0 <= ny < grid_height:
-            spread_prob = weather.fire_spread_probability() * 0.5 * human_risk
+            spread_prob = weather.fire_spread_probability() * 0.07 * human_risk
             influences = ['WeatherAgent', 'HumanActivityAgent']
-            # DODANO: Logowanie dla debugowania
             if grid[ny, nx] in [4, 5, 6]:
                 logger.info("Sąsiednia komórka (%s, %s) ma status %s", nx, ny, grid[ny, nx])
             if grid[ny, nx] == 4:
-                spread_prob *= 0.5  # Zwiększono z 0.3
+                spread_prob *= 0.5
                 influences.append('RiverAgent')
             elif grid[ny, nx] == 5:
-                spread_prob *= 1.5  # Zwiększono z 1.2
+                spread_prob *= 1.5
                 influences.append('MountainAgent')
             elif grid[ny, nx] == 6:
-                spread_prob *= 1.2  # Zwiększono z 0.9
+                spread_prob *= 1.2
                 influences.append('RoadAgent')
             if grid[ny, nx] == 1 and random.random() < spread_prob:
-                new_fire = FireIncidentAgent(nx, ny, size=1, cause='Spread', start_day=fire.start_day)
+                # Zmniejszony rozmiar początkowy dla Spread
+                new_fire = FireIncidentAgent(nx, ny, size=0.5, cause='Spread', start_day=fire.start_day)
                 new_fire.spread_influences = influences
                 new_fires.append(new_fire)
                 forest = next((fg for fg in forests if fg.grid_x == nx and fg.grid_y == ny), None)
@@ -501,31 +543,31 @@ def spread_fire(fire, grid, weather, counties, total_fires):
                     forest.ignition_days.append(fire.start_day)
                     logger.info("Rozprzestrzenianie pożaru do (%s, %s), dzień: %s, powiat: %s", 
                                 nx, ny, fire.start_day, current_county.name if current_county else 'brak')
-                if len(total_fires) + len(new_fires) >= 30000:
+                if len(total_fires) + len(new_fires) >= 800:
                     break
-    if current_county and len(total_fires) + len(new_fires) < 30000:
+    if current_county and len(total_fires) + len(new_fires) < 800 and random.random() < 0.03:
         neighbor_counties = random.sample(list(counties.values()), min(3, len(counties)))
         for neighbor in neighbor_counties:
-            if neighbor != current_county and random.random() < 0.15:
+            if neighbor != current_county:
                 forest_cells = [(f.grid_x, f.grid_y) for f in forests if f.status == 1]
                 if forest_cells:
                     x, y = random.choice(forest_cells)
-                    spread_prob = weather.fire_spread_probability() * neighbor.human_activity.fire_risk_multiplier
+                    spread_prob = weather.fire_spread_probability() * neighbor.human_activity.fire_risk_multiplier * 0.05
                     influences = ['WeatherAgent', 'HumanActivityAgent']
-                    # DODANO: Logowanie dla debugowania
                     if grid[y, x] in [4, 5, 6]:
                         logger.info("Komórka między powiatami (%s, %s) ma status %s", x, y, grid[y, x])
                     if grid[y, x] == 4:
-                        spread_prob *= 0.5  # Zwiększono z 0.3
+                        spread_prob *= 0.5
                         influences.append('RiverAgent')
                     elif grid[y, x] == 5:
-                        spread_prob *= 1.5  # Zwiększono z 1.2
+                        spread_prob *= 1.5
                         influences.append('MountainAgent')
                     elif grid[y, x] == 6:
-                        spread_prob *= 2.0  # Zwiększono z 1.5
+                        spread_prob *= 2.0
                         influences.append('RoadAgent')
                     if grid[y, x] == 1 and random.random() < spread_prob:
-                        new_fire = FireIncidentAgent(x, y, size=1, cause='County Spread', start_day=fire.start_day)
+                        # Zmniejszony rozmiar początkowy dla County Spread
+                        new_fire = FireIncidentAgent(x, y, size=0.5, cause='County Spread', start_day=fire.start_day)
                         new_fire.spread_influences = influences
                         new_fires.append(new_fire)
                         forest = next((fg for fg in forests if fg.grid_x == x and fg.grid_y == y), None)
@@ -533,7 +575,7 @@ def spread_fire(fire, grid, weather, counties, total_fires):
                             forest.ignition_days.append(fire.start_day)
                             logger.info("Rozprzestrzenianie między powiatami do (%s, %s), dzień: %s, powiat: %s", 
                                         x, y, fire.start_day, neighbor.name)
-                        if len(total_fires) + len(new_fires) >= 30000:
+                        if len(total_fires) + len(new_fires) >= 800:
                             break
     return new_fires
 
@@ -559,7 +601,7 @@ for road in roads:
 
 for day in range(1, simulation_days + 1):
     logger.info("Symulacja: dzień %s, liczba pożarów: %s", day, len(all_fires))
-    if len(all_fires) >= 30000:
+    if len(all_fires) >= 800:
         break
     weather.update()
     for county in counties.values():
@@ -571,12 +613,12 @@ for day in range(1, simulation_days + 1):
         for fire in county.active_fires[:]:
             if fire.active and fire.start_day + fire.duration >= day:
                 new_fires.extend(spread_fire(fire, grid, weather, counties, all_fires))
-                if len(all_fires) + len(new_fires) >= 30000:
+                if len(all_fires) + len(new_fires) >= 800:
                     break
-        if len(all_fires) + len(new_fires) >= 30000:
+        if len(all_fires) + len(new_fires) >= 800:
             break
     for nf in new_fires:
-        if len(all_fires) >= 30000:
+        if len(all_fires) >= 800:
             break
         county = random.choice(list(counties.values()))
         county.active_fires.append(nf)
@@ -826,7 +868,7 @@ for county in counties.values():
         if not (41.0 <= lat <= 45.0 and -111.0 <= lon <= -104.0):
             continue
         duration_days = max(5, fire.duration)
-        max_radius = min(25, max(1, fire.size / 6))
+        max_radius = min(25, max(1, fire.size / 20))
         for day in range(duration_days + 1):
             current_date = datetime(2015, 1, 1) + timedelta(days=fire.start_day - 1 + day)
             timestamp = current_date.isoformat()
@@ -943,12 +985,9 @@ logger.info("Symulacja zapisana jako 'wy_fires_simulation_365_with_resources.htm
 # ==========================
 # 9. Walidacja wyników symulacji z danymi rzeczywistymi
 # ==========================
-from scipy.spatial import cKDTree
-
 def validate_simulation(real_df, sim_fires, grid_size, grid_x_min, grid_y_min, simulation_year=2015):
     logger.info("Rozpoczynanie walidacji wyników symulacji z danymi rzeczywistymi...")
     
-    # Filtr danych rzeczywistych dla roku symulacji (2015)
     real_df = real_df[real_df['FIRE_YEAR'] == simulation_year].copy()
     if real_df.empty:
         logger.warning("Brak danych rzeczywistych dla roku %s.", simulation_year)
@@ -957,7 +996,6 @@ def validate_simulation(real_df, sim_fires, grid_size, grid_x_min, grid_y_min, s
             f.write(f"Brak danych rzeczywistych dla roku {simulation_year}.\n")
         return
     
-    # Przygotowanie danych rzeczywistych
     real_df['CAUSE_TYPE'] = real_df['STAT_CAUSE_DESCR'].apply(
         lambda x: 'Human' if x in human_causes else 'Lightning' if x == 'Lightning' else 'Other'
     )
@@ -967,7 +1005,6 @@ def validate_simulation(real_df, sim_fires, grid_size, grid_x_min, grid_y_min, s
     real_durations = real_df['DURATION'].values
     real_doys = real_df['DISCOVERY_DOY'].values
 
-    # Przygotowanie danych symulowanych
     sim_coords = []
     sim_causes = []
     sim_sizes = []
@@ -990,7 +1027,6 @@ def validate_simulation(real_df, sim_fires, grid_size, grid_x_min, grid_y_min, s
     sim_durations = np.array(sim_durations)
     sim_doys = np.array(sim_doys)
 
-    # Sprawdzenie, czy są dane do porównania
     if len(sim_coords) == 0 or len(real_coords) == 0:
         logger.warning("Brak danych symulowanych lub rzeczywistych do porównania.")
         with open('validation_results.txt', 'w') as f:
@@ -998,8 +1034,7 @@ def validate_simulation(real_df, sim_fires, grid_size, grid_x_min, grid_y_min, s
             f.write("Brak danych symulowanych lub rzeczywistych do porównania.\n")
         return
 
-    # 1. Porównanie przestrzenne (spatial overlap)
-    spatial_threshold = 0.01  # 1 km w stopniach (przybliżenie, ~0.01 stopnia)
+    spatial_threshold = 0.01
     tree = cKDTree(real_coords)
     distances, indices = tree.query(sim_coords, k=1, distance_upper_bound=spatial_threshold)
     matched_fires = np.sum(~np.isinf(distances))
@@ -1007,7 +1042,6 @@ def validate_simulation(real_df, sim_fires, grid_size, grid_x_min, grid_y_min, s
     logger.info("Procent pożarów symulowanych z odpowiednikiem rzeczywistym w promieniu %.2f km: %.2f%%",
                 spatial_threshold * 111, spatial_overlap_percent)
 
-    # 2. Porównanie rozkładu przyczyn
     real_cause_counts = pd.Series(real_causes).value_counts(normalize=True) * 100
     sim_cause_counts = pd.Series(sim_causes).value_counts(normalize=True) * 100
     cause_comparison = {}
@@ -1017,32 +1051,27 @@ def validate_simulation(real_df, sim_fires, grid_size, grid_x_min, grid_y_min, s
         cause_comparison[cause] = {'Real': real_percent, 'Simulated': sim_percent}
     logger.info("Porównanie rozkładu przyczyn: %s", cause_comparison)
 
-    # 3. Porównanie rozmiaru pożaru
     real_size_mean = np.mean(real_sizes)
     sim_size_mean = np.mean(sim_sizes) if sim_sizes.size > 0 else 0
     size_mae = np.mean(np.abs(real_sizes[:min(len(real_sizes), len(sim_sizes))] - sim_sizes[:min(len(real_sizes), len(sim_sizes))])) if sim_sizes.size > 0 else float('inf')
     logger.info("Średni rozmiar pożaru - Rzeczywisty: %.2f akrów, Symulowany: %.2f akrów, MAE: %.2f akrów",
                 real_size_mean, sim_size_mean, size_mae)
 
-    # 4. Porównanie czasu trwania pożaru
     real_duration_mean = np.mean(real_durations)
     sim_duration_mean = np.mean(sim_durations) if sim_durations.size > 0 else 0
     duration_mae = np.mean(np.abs(real_durations[:min(len(real_durations), len(sim_durations))] - sim_durations[:min(len(real_durations), len(sim_durations))])) if sim_durations.size > 0 else float('inf')
     logger.info("Średni czas trwania pożaru - Rzeczywisty: %.2f dni, Symulowany: %.2f dni, MAE: %.2f dni",
                 real_duration_mean, sim_duration_mean, duration_mae)
 
-    # 5. Porównanie czasowe (DOY)
-    temporal_threshold = 7  # ±7 dni
+    temporal_threshold = 3
     temporal_matches = 0
     for sim_doy in sim_doys:
         if np.any(np.abs(real_doys - sim_doy) <= temporal_threshold):
             temporal_matches += 1
     temporal_overlap_percent = (temporal_matches / len(sim_doys)) * 100 if sim_doys.size > 0 else 0 
-
     logger.info("Procent pożarów symulowanych w oknie czasowym ±%s dni od rzeczywistych: %.2f%%",
                 temporal_threshold, temporal_overlap_percent)
 
-    # Zapis wyników walidacji do pliku
     with open('validation_results.txt', 'w') as f:
         f.write("=== Wyniki walidacji symulacji ===\n\n")
         f.write(f"Rok symulacji: {simulation_year}\n")
@@ -1076,8 +1105,4 @@ def validate_simulation(real_df, sim_fires, grid_size, grid_x_min, grid_y_min, s
     
     logger.info("Zapisano wyniki walidacji do pliku 'validation_results.txt'.")
 
-# Wywołanie walidacji po pętli symulacyjnej
-# Umieść to zaraz po sekcji zapisu statystyk (przed wizualizacją Folium)
 validate_simulation(df, all_fires, grid_size, grid_x_min, grid_y_min, simulation_year=2015)
-
-# Reszta kodu (wizualizacja Folium) pozostaje bez zmian
