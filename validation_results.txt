@@ -1,37 +1,37 @@
 === Wyniki walidacji symulacji ===
 
 Rok symulacji: 2006
-Ca�kowita liczba po�ar�w symulowanych: 602
+Ca�kowita liczba po�ar�w symulowanych: 380
 Ca�kowita liczba po�ar�w rzeczywistych (dla roku 2006): 769
 
 1. Przestrzenne pokrycie:
-  - Procent po�ar�w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 63.62%
-  - Liczba dopasowanych po�ar�w: 383
+  - Procent po�ar�w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 80.26%
+  - Liczba dopasowanych po�ar�w: 305
 
 2. Rozk�ad przyczyn po�ar�w (%):
   - Human:
       Rzeczywiste: 40.18%
-      Symulowane: 27.62%
+      Symulowane: 41.27%
   - Lightning:
       Rzeczywiste: 47.46%
-      Symulowane: 24.13%
+      Symulowane: 39.42%
   - Other:
       Rzeczywiste: 12.35%
-      Symulowane: 3.49%
+      Symulowane: 14.02%
   - Spread:
       Rzeczywiste: 0.00%
-      Symulowane: 44.76%
+      Symulowane: 5.29%
 
 3. Rozmiar po�ar�w:
   - �redni rozmiar rzeczywisty: 318.98 akr�w
-  - �redni rozmiar symulowany: 101.61 akr�w
-  - �redni b��d bezwzgl�dny (MAE): 479.46 akr�w
+  - �redni rozmiar symulowany: 144.20 akr�w
+  - �redni b��d bezwzgl�dny (MAE): 706.96 akr�w
 
 4. Czas trwania po�ar�w:
   - �redni czas trwania rzeczywisty: 3.31 dni
-  - �redni czas trwania symulowany: 1.94 dni
-  - �redni b��d bezwzgl�dny (MAE): 3.48 dni
+  - �redni czas trwania symulowany: 1.93 dni
+  - �redni b��d bezwzgl�dny (MAE): 3.65 dni
 
 5. Pokrycie czasowe:
-  - Procent po�ar�w symulowanych w oknie �3 dni od rzeczywistych: 94.51%
-  - Liczba dopasowanych po�ar�w czasowo: 568
+  - Procent po�ar�w symulowanych w oknie �3 dni od rzeczywistych: 92.86%
+  - Liczba dopasowanych po�ar�w czasowo: 351

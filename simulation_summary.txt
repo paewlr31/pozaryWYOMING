@@ -1,22 +1,22 @@
 === Podsumowanie symulacji po¿arów ===
 
-Ca³kowita liczba po¿arów: 602
+Ca³kowita liczba po¿arów: 380
 
 Procent po¿arów wywo³anych przez ró¿ne mechanizmy:
-  - Wywo³ane przez cz³owieka (Human): 27.74%
-  - Wywo³ane przez pioruny (Lightning): 24.09%
-  - Nieustalone/inne (Other): 3.49%
-  - Rozprzestrzenianie lokalne (automat komórkowy): 37.38%
-  - Rozprzestrzenianie miêdzy powiatami (automat komórkowy): 7.31%
+  - Wywo³ane przez cz³owieka (Human): 41.58%
+  - Wywo³ane przez pioruny (Lightning): 39.21%
+  - Nieustalone/inne (Other): 13.95%
+  - Rozprzestrzenianie lokalne (automat komórkowy): 5.00%
+  - Rozprzestrzenianie miêdzy powiatami (automat komórkowy): 0.26%
 
 Procent po¿arów podtrzymywanych przez agentów:
   - WeatherAgent: 100.00% (pogoda wp³ynê³a na rozprzestrzenianie)
   - HumanActivityAgent: 100.00% (aktywnoœæ ludzka wp³ynê³a na rozprzestrzenianie)
-  - RiverAgent: 1.83% (rozprzestrzenianie w pobli¿u rzek)
+  - RiverAgent: 4.21% (rozprzestrzenianie w pobli¿u rzek)
   - MountainAgent: 0.00% (rozprzestrzenianie w górach)
-  - RoadAgent: 8.80% (rozprzestrzenianie w pobli¿u dróg)
+  - RoadAgent: 4.74% (rozprzestrzenianie w pobli¿u dróg)
 
 Liczba po¿arów z wp³ywem poszczególnych agentów:
-  - Rzeki (RiverAgent): 11 po¿arów
+  - Rzeki (RiverAgent): 16 po¿arów
   - Góry (MountainAgent): 0 po¿arów
-  - Drogi (RoadAgent): 53 po¿arów
+  - Drogi (RoadAgent): 18 po¿arów
