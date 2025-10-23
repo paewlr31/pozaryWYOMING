@@ -1,37 +1,37 @@
 === Wyniki walidacji symulacji ===
 
-Rok symulacji: 2015
-Ca�kowita liczba po�ar�w symulowanych: 465
-Ca�kowita liczba po�ar�w rzeczywistych (dla roku 2015): 632
+Rok symulacji: 2006
+Ca�kowita liczba po�ar�w symulowanych: 602
+Ca�kowita liczba po�ar�w rzeczywistych (dla roku 2006): 769
 
 1. Przestrzenne pokrycie:
-  - Procent po�ar�w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 73.55%
-  - Liczba dopasowanych po�ar�w: 342
+  - Procent po�ar�w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 63.62%
+  - Liczba dopasowanych po�ar�w: 383
 
 2. Rozk�ad przyczyn po�ar�w (%):
   - Human:
-      Rzeczywiste: 39.72%
-      Symulowane: 33.48%
+      Rzeczywiste: 40.18%
+      Symulowane: 27.62%
   - Lightning:
-      Rzeczywiste: 34.65%
-      Symulowane: 25.49%
+      Rzeczywiste: 47.46%
+      Symulowane: 24.13%
   - Other:
-      Rzeczywiste: 25.63%
-      Symulowane: 20.73%
+      Rzeczywiste: 12.35%
+      Symulowane: 3.49%
   - Spread:
       Rzeczywiste: 0.00%
-      Symulowane: 20.30%
+      Symulowane: 44.76%
 
 3. Rozmiar po�ar�w:
-  - �redni rozmiar rzeczywisty: 58.26 akr�w
-  - �redni rozmiar symulowany: 49.00 akr�w
-  - �redni b��d bezwzgl�dny (MAE): 109.19 akr�w
+  - �redni rozmiar rzeczywisty: 318.98 akr�w
+  - �redni rozmiar symulowany: 101.61 akr�w
+  - �redni b��d bezwzgl�dny (MAE): 479.46 akr�w
 
 4. Czas trwania po�ar�w:
-  - �redni czas trwania rzeczywisty: 1.95 dni
-  - �redni czas trwania symulowany: 2.17 dni
-  - �redni b��d bezwzgl�dny (MAE): 2.05 dni
+  - �redni czas trwania rzeczywisty: 3.31 dni
+  - �redni czas trwania symulowany: 1.94 dni
+  - �redni b��d bezwzgl�dny (MAE): 3.48 dni
 
 5. Pokrycie czasowe:
-  - Procent po�ar�w symulowanych w oknie �3 dni od rzeczywistych: 88.34%
-  - Liczba dopasowanych po�ar�w czasowo: 409
+  - Procent po�ar�w symulowanych w oknie �3 dni od rzeczywistych: 94.51%
+  - Liczba dopasowanych po�ar�w czasowo: 568

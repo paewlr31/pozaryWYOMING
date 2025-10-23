@@ -9,6 +9,8 @@ wildfires.csv
 *.csv
 *.json
 *.html
+*.png
+plots/
 
 # Cache Pythona
 __pycache__/

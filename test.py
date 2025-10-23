@@ -50,10 +50,15 @@ human_causes = ['Arson', 'Campfire', 'Children', 'Equipment Use', 'Fireworks', '
 df['CAUSE_TYPE'] = df['STAT_CAUSE_DESCR'].apply(
     lambda x: 'Human' if x in human_causes else 'Lightning' if x == 'Lightning' else 'Other'
 )
-# Rozkład przyczyn
-human_fire_ratio = 0.42
-lightning_fire_ratio = 0.33
-other_fire_ratio = 0.25
+# Rozkład przyczyn - ZMIANA: Podwojenie udziału Human i Lightning
+human_fire_ratio = 0.84  # ZMIANA: z 0.42 na 0.84
+lightning_fire_ratio = 0.66  # ZMIANA: z 0.33 na 0.66
+other_fire_ratio = 0.10  # ZMIANA: z 0.25 na 0.10
+# Normalizacja proporcji
+total = human_fire_ratio + lightning_fire_ratio + other_fire_ratio
+human_fire_ratio /= total  # ≈ 0.525
+lightning_fire_ratio /= total  # ≈ 0.4125
+other_fire_ratio /= total  # ≈ 0.0625
 logger.info("Założony rozkład przyczyn: Human=%.2f%%, Lightning=%.2f%%, Other=%.2f%%",
             human_fire_ratio * 100, lightning_fire_ratio * 100, other_fire_ratio * 100)
 
@@ -154,39 +159,34 @@ class FireIncidentAgent:
     def __init__(self, grid_x, grid_y, size, cause, start_day):
         self.grid_x = grid_x
         self.grid_y = grid_y
-        # Nowy rozkład rozmiaru z ciaśniejszym sigma i niższym cap-em
-        if size == 1 or size == 0.5:  # Dla nowych pożarów i rozprzestrzeniania
-            base_size = np.random.lognormal(np.log(avg_size), 0.3)  # ZMIANA: sigma z 0.4 na 0.3 (linia 7)
-            # Ograniczenie outliersów: ponowne losowanie, jeśli >75 akrów
-            while base_size > 75:  # ZMIANA: próg z 150 na 75 (linia 9)
-                base_size = np.random.lognormal(np.log(avg_size), 0.3)  # ZMIANA: sigma z 0.4 na 0.3 (linia 10)
-            # Różnicowanie rozmiaru według przyczyny
+        if size == 1 or size == 0.5:
+            base_size = np.random.lognormal(np.log(avg_size), 0.3)
+            while base_size > 255:
+                base_size = np.random.lognormal(np.log(avg_size), 0.3)
             if cause == 'Spread' or cause == 'County Spread':
-                self.size = min(150, base_size * 0.05)  # ZMIANA: cap z 300 na 150, mnożnik z 0.1 na 0.05 (linia 12)
+                self.size = min(150, base_size * 0.25)
             elif cause == 'Lightning':
-                self.size = min(150, base_size * 1.0)  # ZMIANA: cap z 300 na 150, mnożnik z 1.2 na 1.0 (linia 14)
+                self.size = min(150, base_size * 2.4)
             elif cause == 'Other':
-                self.size = min(150, base_size * 0.7)  # ZMIANA: cap z 300 na 150, mnożnik z 0.8 na 0.7 (linia 16)
+                self.size = min(150, base_size * 2.05)
             else:  # Human
-                self.size = min(150, base_size * 0.9)  # ZMIANA: cap z 300 na 150, mnożnik z 1.0 na 0.9 (linia 18)
+                self.size = min(150, base_size * 2.25)
         else:
-            self.size = size  # Dla przypadków, gdzie rozmiar jest już określony
+            self.size = size
         self.cause = cause
         self.active = True
         self.start_day = start_day
         self.duration = max(1, int(np.random.normal(avg_duration, std_duration * 0.3)))
         self.assigned_resources = []
         self.spread_influences = []
-        # Logowanie rozmiaru i statystyk dla debugowania
         logger.info("Nowy pożar w (%s, %s), przyczyna: %s, rozmiar: %.2f akrów", 
                     grid_x, grid_y, cause, self.size)
-        # Logowanie statystyk rozkładu (dla weryfikacji)
-        sample_sizes = [np.random.lognormal(np.log(avg_size), 0.3) for _ in range(100)]  # ZMIANA: próbki z 100 losowań, sigma 0.3 (linia 29)
-        sample_sizes = [s for s in sample_sizes if s <= 75]  # ZMIANA: uwzględniamy próg 75 (linia 30)
+        sample_sizes = [np.random.lognormal(np.log(avg_size), 0.3) for _ in range(100)]
+        sample_sizes = [s for s in sample_sizes if s <= 75]
         logger.debug("Statystyki rozmiaru: bieżący=%.2f, min=%.2f, max=%.2f, avg=%.2f, avg_size=%.2f", 
                      self.size, min(sample_sizes) if sample_sizes else 0, 
                      max(sample_sizes) if sample_sizes else 0, 
-                     np.mean(sample_sizes) if sample_sizes else 0, avg_size)  # ZMIANA: poprawione statystyki (linia 32-34)
+                     np.mean(sample_sizes) if sample_sizes else 0, avg_size)
 
 class ResourceAgent:
     def __init__(self, resource_type, grid_x, grid_y, home_station, speed, range_cells, effectiveness):
@@ -332,17 +332,17 @@ class RegionAgent:
         self.counties = counties
 
     def monte_carlo_first_fire(self, day, weather, total_fires):
-        if len(total_fires) >= 800:
+        if len(total_fires) >= 2000:
             return
         county = random.choice(self.counties)
         forest_cells = [(f.grid_x, f.grid_y) for f in forests if f.status == 1]
         if forest_cells:
-            base_ignition_prob = 25.0 * county.human_activity.fire_risk_multiplier
-            real_coords = [(row['grid_x'] - grid_x_min, row['grid_y'] - grid_y_min) for _, row in df[df['FIRE_YEAR'] == 2015].iterrows()]
+            base_ignition_prob = 100000.0 * county.human_activity.fire_risk_multiplier
+            real_coords = [(row['grid_x'] - grid_x_min, row['grid_y'] - grid_y_min) for _, row in df[df['FIRE_YEAR'] == 2006].iterrows()]
             if real_coords:
                 tree = cKDTree(real_coords)
                 distances, _ = tree.query(forest_cells, k=1)
-                weights = np.exp(-distances / 0.1)
+                weights = np.exp(-distances / 0.00000005)
                 weights /= weights.sum()
                 x, y = forest_cells[np.random.choice(len(forest_cells), p=weights)]
             else:
@@ -350,20 +350,45 @@ class RegionAgent:
             if random.random() < base_ignition_prob:
                 if random.random() < weather.fire_spread_probability() and grid[y, x] == 1:
                     rand = random.random()
-                    if rand < human_fire_ratio:
+                    if rand < 0.525:
                         cause = 'Human'
-                    elif rand < human_fire_ratio + lightning_fire_ratio:
+                    elif rand < 0.9375:
                         cause = 'Lightning'
                     else:
                         cause = 'Other'
                     fire = FireIncidentAgent(x, y, size=1, cause=cause, start_day=day)
+                    # Sprawdzanie bliskości rzek, gór i dróg
+                    influences = ['WeatherAgent', 'HumanActivityAgent']
+                    def is_near_agent(x, y, agent_type, radius=2):
+                        if agent_type == 'RiverAgent':
+                            for river in rivers:
+                                for rx, ry in river.points:
+                                    if abs(rx - x) <= radius and abs(ry - y) <= radius:
+                                        return True
+                        elif agent_type == 'MountainAgent':
+                            for mountain in mountains:
+                                if mountain.min_x <= x <= mountain.max_x and mountain.min_y <= y <= mountain.max_y:
+                                    return True
+                        elif agent_type == 'RoadAgent':
+                            for road in roads:
+                                for rx, ry in road.points:
+                                    if abs(rx - x) <= radius and abs(ry - y) <= radius:
+                                        return True
+                        return False
+                    if is_near_agent(x, y, 'RiverAgent'):
+                        influences.append('RiverAgent')
+                    if is_near_agent(x, y, 'MountainAgent'):
+                        influences.append('MountainAgent')
+                    if is_near_agent(x, y, 'RoadAgent'):
+                        influences.append('RoadAgent')
+                    fire.spread_influences = influences
                     county.active_fires.append(fire)
                     total_fires.append(fire)
                     forest = next((fg for fg in forests if fg.grid_x == x and fg.grid_y == y), None)
                     if forest is not None and forest.status == 1:
                         forest.ignition_days.append(day)
-                        logger.info("Zapłon lasu w (%s, %s), dzień: %s, powiat: %s, przyczyna: %s", x, y, day, county.name, cause)
-
+                        logger.info("Zapłon lasu w (%s, %s), dzień: %s, powiat: %s, przyczyna: %s, wpływy: %s", 
+                                    x, y, day, county.name, cause, influences)
 # ==========================
 # 4. Inicjalizacja agentów
 # ==========================
@@ -507,7 +532,7 @@ weather = WeatherAgent()
 # 5. Funkcje pomocnicze
 # ==========================
 def spread_fire(fire, grid, weather, counties, total_fires):
-    if len(total_fires) >= 800:
+    if len(total_fires) >= 2000:
         return []
     directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
     new_fires = []
@@ -517,65 +542,88 @@ def spread_fire(fire, grid, weather, counties, total_fires):
             current_county = county
             break
     human_risk = current_county.human_activity.fire_risk_multiplier if current_county else 1.0
+
+    # Funkcja pomocnicza do sprawdzania bliskości
+    def is_near_agent(x, y, agent_type, radius=2):
+        if agent_type == 'RiverAgent':
+            for river in rivers:
+                for rx, ry in river.points:
+                    if abs(rx - x) <= radius and abs(ry - y) <= radius:
+                        return True
+        elif agent_type == 'MountainAgent':
+            for mountain in mountains:
+                if mountain.min_x <= x <= mountain.max_x and mountain.min_y <= y <= mountain.max_y:
+                    return True
+        elif agent_type == 'RoadAgent':
+            for road in roads:
+                for rx, ry in road.points:
+                    if abs(rx - x) <= radius and abs(ry - y) <= radius:
+                        return True
+        return False
+
+    # Lokalne rozprzestrzenianie
     for dx, dy in directions:
         nx, ny = fire.grid_x + dx, fire.grid_y + dy
         if 0 <= nx < grid_width and 0 <= ny < grid_height:
-            spread_prob = weather.fire_spread_probability() * 0.07 * human_risk
+            spread_prob = weather.fire_spread_probability() * 0.28 * human_risk
             influences = ['WeatherAgent', 'HumanActivityAgent']
+            # Sprawdzanie bliskości rzek, gór i dróg
+            if is_near_agent(nx, ny, 'RiverAgent'):
+                spread_prob *= 0.1  # Redukcja prawdopodobieństwa w pobliżu rzek
+                influences.append('RiverAgent')
+            if is_near_agent(nx, ny, 'MountainAgent'):
+                spread_prob *= 3.0  # Zwiększenie prawdopodobieństwa w górach
+                influences.append('MountainAgent')
+            if is_near_agent(nx, ny, 'RoadAgent'):
+                spread_prob *= 2.5  # Zwiększenie prawdopodobieństwa w pobliżu dróg
+                influences.append('RoadAgent')
+            # Sprawdzanie statusu komórki (dla logowania i zgodności)
             if grid[ny, nx] in [4, 5, 6]:
                 logger.info("Sąsiednia komórka (%s, %s) ma status %s", nx, ny, grid[ny, nx])
-            if grid[ny, nx] == 4:
-                spread_prob *= 0.5
-                influences.append('RiverAgent')
-            elif grid[ny, nx] == 5:
-                spread_prob *= 1.5
-                influences.append('MountainAgent')
-            elif grid[ny, nx] == 6:
-                spread_prob *= 1.2
-                influences.append('RoadAgent')
             if grid[ny, nx] == 1 and random.random() < spread_prob:
-                # Zmniejszony rozmiar początkowy dla Spread
                 new_fire = FireIncidentAgent(nx, ny, size=0.5, cause='Spread', start_day=fire.start_day)
                 new_fire.spread_influences = influences
                 new_fires.append(new_fire)
                 forest = next((fg for fg in forests if fg.grid_x == nx and fg.grid_y == ny), None)
                 if forest is not None and forest.status == 1:
                     forest.ignition_days.append(fire.start_day)
-                    logger.info("Rozprzestrzenianie pożaru do (%s, %s), dzień: %s, powiat: %s", 
-                                nx, ny, fire.start_day, current_county.name if current_county else 'brak')
-                if len(total_fires) + len(new_fires) >= 800:
+                    logger.info("Rozprzestrzenianie pożaru do (%s, %s), dzień: %s, powiat: %s, wpływy: %s, prawdopodobieństwo: %.4f", 
+                                nx, ny, fire.start_day, current_county.name if current_county else 'brak', influences, spread_prob)
+                if len(total_fires) + len(new_fires) >= 2000:
                     break
-    if current_county and len(total_fires) + len(new_fires) < 800 and random.random() < 0.03:
+
+    # Rozprzestrzenianie między powiatami
+    if current_county and len(total_fires) + len(new_fires) < 2000 and random.random() < 0.072:
         neighbor_counties = random.sample(list(counties.values()), min(3, len(counties)))
         for neighbor in neighbor_counties:
             if neighbor != current_county:
                 forest_cells = [(f.grid_x, f.grid_y) for f in forests if f.status == 1]
                 if forest_cells:
                     x, y = random.choice(forest_cells)
-                    spread_prob = weather.fire_spread_probability() * neighbor.human_activity.fire_risk_multiplier * 0.05
+                    spread_prob = weather.fire_spread_probability() * neighbor.human_activity.fire_risk_multiplier * 0.1
                     influences = ['WeatherAgent', 'HumanActivityAgent']
+                    # Sprawdzanie bliskości rzek, gór i dróg
+                    if is_near_agent(x, y, 'RiverAgent'):
+                        spread_prob *= 0.1
+                        influences.append('RiverAgent')
+                    if is_near_agent(x, y, 'MountainAgent'):
+                        spread_prob *= 3.0
+                        influences.append('MountainAgent')
+                    if is_near_agent(x, y, 'RoadAgent'):
+                        spread_prob *= 2.5
+                        influences.append('RoadAgent')
                     if grid[y, x] in [4, 5, 6]:
                         logger.info("Komórka między powiatami (%s, %s) ma status %s", x, y, grid[y, x])
-                    if grid[y, x] == 4:
-                        spread_prob *= 0.5
-                        influences.append('RiverAgent')
-                    elif grid[y, x] == 5:
-                        spread_prob *= 1.5
-                        influences.append('MountainAgent')
-                    elif grid[y, x] == 6:
-                        spread_prob *= 2.0
-                        influences.append('RoadAgent')
                     if grid[y, x] == 1 and random.random() < spread_prob:
-                        # Zmniejszony rozmiar początkowy dla County Spread
                         new_fire = FireIncidentAgent(x, y, size=0.5, cause='County Spread', start_day=fire.start_day)
                         new_fire.spread_influences = influences
                         new_fires.append(new_fire)
                         forest = next((fg for fg in forests if fg.grid_x == x and fg.grid_y == y), None)
                         if forest is not None and forest.status == 1:
                             forest.ignition_days.append(fire.start_day)
-                            logger.info("Rozprzestrzenianie między powiatami do (%s, %s), dzień: %s, powiat: %s", 
-                                        x, y, fire.start_day, neighbor.name)
-                        if len(total_fires) + len(new_fires) >= 800:
+                            logger.info("Rozprzestrzenianie między powiatami do (%s, %s), dzień: %s, powiat: %s, wpływy: %s, prawdopodobieństwo: %.4f", 
+                                        x, y, fire.start_day, neighbor.name, influences, spread_prob)
+                        if len(total_fires) + len(new_fires) >= 2000:
                             break
     return new_fires
 
@@ -601,7 +649,7 @@ for road in roads:
 
 for day in range(1, simulation_days + 1):
     logger.info("Symulacja: dzień %s, liczba pożarów: %s", day, len(all_fires))
-    if len(all_fires) >= 800:
+    if len(all_fires) >= 2000:  # ZMIANA: z 800 na 2000
         break
     weather.update()
     for county in counties.values():
@@ -613,12 +661,12 @@ for day in range(1, simulation_days + 1):
         for fire in county.active_fires[:]:
             if fire.active and fire.start_day + fire.duration >= day:
                 new_fires.extend(spread_fire(fire, grid, weather, counties, all_fires))
-                if len(all_fires) + len(new_fires) >= 800:
+                if len(all_fires) + len(new_fires) >= 2000:  # ZMIANA: z 800 na 2000
                     break
-        if len(all_fires) + len(new_fires) >= 800:
+        if len(all_fires) + len(new_fires) >= 2000:  # ZMIANA: z 800 na 2000
             break
     for nf in new_fires:
-        if len(all_fires) >= 800:
+        if len(all_fires) >= 2000:  # ZMIANA: z 800 na 2000
             break
         county = random.choice(list(counties.values()))
         county.active_fires.append(nf)
@@ -719,6 +767,10 @@ if total_fires > 0:
         f.write(f"  - RiverAgent: {river_percent:.2f}% (rozprzestrzenianie w pobliżu rzek)\n")
         f.write(f"  - MountainAgent: {mountain_percent:.2f}% (rozprzestrzenianie w górach)\n")
         f.write(f"  - RoadAgent: {road_percent:.2f}% (rozprzestrzenianie w pobliżu dróg)\n")
+        f.write("\nLiczba pożarów z wpływem poszczególnych agentów:\n")  # ZMIANA: Dodano statystyki liczby
+        f.write(f"  - Rzeki (RiverAgent): {river_influenced} pożarów\n")
+        f.write(f"  - Góry (MountainAgent): {mountain_influenced} pożarów\n")
+        f.write(f"  - Drogi (RoadAgent): {road_influenced} pożarów\n")
     logger.info("Zapisano podsumowanie statystyk do pliku 'simulation_summary.txt'.")
 else:
     with open('simulation_summary.txt', 'w') as f:
@@ -868,9 +920,9 @@ for county in counties.values():
         if not (41.0 <= lat <= 45.0 and -111.0 <= lon <= -104.0):
             continue
         duration_days = max(5, fire.duration)
-        max_radius = min(25, max(1, fire.size / 20))
+        max_radius = min(25, max(1, fire.size / 5))
         for day in range(duration_days + 1):
-            current_date = datetime(2015, 1, 1) + timedelta(days=fire.start_day - 1 + day)
+            current_date = datetime(2006, 1, 1) + timedelta(days=fire.start_day - 1 + day)  # ZMIANA: z 2005 na 2000
             timestamp = current_date.isoformat()
             if day <= duration_days / 2:
                 radius = max_radius * (day / (duration_days / 2))
@@ -912,7 +964,7 @@ for forest in forests:
             day_num = ign_day - 1 + d
             if day_num < 0 or day_num >= simulation_days:
                 continue
-            current_date = datetime(2015, 1, 1) + timedelta(days=day_num)
+            current_date = datetime(2006, 1, 1) + timedelta(days=day_num)  # ZMIANA: z 2005 na 2000
             timestamp = current_date.isoformat()
             feature = {
                 'type': 'Feature',
@@ -934,7 +986,7 @@ for forest in forests:
             features.append(feature)
         restore_day = ign_day + 90
         if 1 <= restore_day <= simulation_days:
-            current_date = datetime(2015, 1, 1) + timedelta(days=restore_day - 1)
+            current_date = datetime(2006, 1, 1) + timedelta(days=restore_day - 1)  # ZMIANA: z 2005 na 2000
             timestamp = current_date.isoformat()
             feature = {
                 'type': 'Feature',
@@ -985,7 +1037,7 @@ logger.info("Symulacja zapisana jako 'wy_fires_simulation_365_with_resources.htm
 # ==========================
 # 9. Walidacja wyników symulacji z danymi rzeczywistymi
 # ==========================
-def validate_simulation(real_df, sim_fires, grid_size, grid_x_min, grid_y_min, simulation_year=2015):
+def validate_simulation(real_df, sim_fires, grid_size, grid_x_min, grid_y_min, simulation_year=2006):  # ZMIANA: z 2005 na 2000
     logger.info("Rozpoczynanie walidacji wyników symulacji z danymi rzeczywistymi...")
     
     real_df = real_df[real_df['FIRE_YEAR'] == simulation_year].copy()
@@ -1105,4 +1157,4 @@ def validate_simulation(real_df, sim_fires, grid_size, grid_x_min, grid_y_min, s
     
     logger.info("Zapisano wyniki walidacji do pliku 'validation_results.txt'.")
 
-validate_simulation(df, all_fires, grid_size, grid_x_min, grid_y_min, simulation_year=2015)
+validate_simulation(df, all_fires, grid_size, grid_x_min, grid_y_min, simulation_year=2006)  # ZMIANA: z 2005 na 2000
