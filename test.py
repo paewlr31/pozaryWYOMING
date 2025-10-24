@@ -15,6 +15,8 @@ from mountains import mountain_locations
 IGNITION_MULTIPLIER = 50000000000000000000000000000.0          
 SPREAD_REDUCTION_FACTOR = 0.2 
 MAX_FIRES = 10000
+SIMULATION_FIRE_YEAR=2015
+
 # ==========================
 # Konfiguracja logowania
 # ==========================
@@ -303,7 +305,7 @@ class FirefighterAgent:
             if random.random() < self.effectiveness:
                 fire.active = False
                 fire.duration = min(fire.duration, max(1, int(fire.duration * 0.5)))
-                logger.info("[Dzień %s] Remiza (%s, %s) ugasiła pożar (%s, %s) bezpośrednio.", 
+                logger.info("[Dzień %s] Remiza (%s, %s) ugasiła pożar (%s, %s bezpośrednio.", 
                             day, self.grid_x, self.grid_y, fire.grid_x, fire.grid_y)
             else:
                 logger.info("[Dzień %s] Remiza (%s, %s) próbuje ugasić pożar (%s, %s).", 
@@ -348,7 +350,7 @@ class RegionAgent:
         forest_cells = [(f.grid_x, f.grid_y) for f in forests if f.status == 1]
         if forest_cells:
             base_ignition_prob = 0.08 * season_factor*county.human_activity.fire_risk_multiplier * IGNITION_MULTIPLIER
-            real_coords = [(row['grid_x'] - grid_x_min, row['grid_y'] - grid_y_min) for _, row in df[df['FIRE_YEAR'] == 2006].iterrows()]
+            real_coords = [(row['grid_x'] - grid_x_min, row['grid_y'] - grid_y_min) for _, row in df[df['FIRE_YEAR'] == SIMULATION_FIRE_YEAR].iterrows()]
             if real_coords:
                 tree = cKDTree(real_coords)
                 distances, _ = tree.query(forest_cells, k=1)
@@ -399,6 +401,7 @@ class RegionAgent:
                         forest.ignition_days.append(day)
                         logger.info("Zapłon lasu w (%s, %s), dzień: %s, powiat: %s, przyczyna: %s, wpływy: %s", 
                                     x, y, day, county.name, cause, influences)
+
 # ==========================
 # 4. Inicjalizacja agentów
 # ==========================
@@ -575,7 +578,7 @@ def spread_fire(fire, grid, weather, counties, total_fires):
     for dx, dy in directions:
         nx, ny = fire.grid_x + dx, fire.grid_y + dy
         if 0 <= nx < grid_width and 0 <= ny < grid_height:
-            spread_prob = weather.fire_spread_probability() * 0.03 * human_risk * SPREAD_REDUCTION_FACTOR  # Zmniejsz z 0.28 na 0.05
+            spread_prob = weather.fire_spread_probability() * 0.03 * human_risk * SPREAD_REDUCTION_FACTOR  # Zmniejsz z  ali
             influences = ['WeatherAgent', 'HumanActivityAgent']
             # Sprawdzanie bliskości rzek, gór i dróg
             if is_near_agent(nx, ny, 'RiverAgent'):
@@ -760,30 +763,174 @@ if total_fires > 0:
     mountain_percent = (mountain_influenced / total_fires) * 100 if total_fires > 0 else 0
     road_percent = (road_influenced / total_fires) * 100 if total_fires > 0 else 0
 
-    with open('simulation_summary.txt', 'w') as f:
-        f.write("=== Podsumowanie symulacji pożarów ===\n\n")
-        f.write(f"Całkowita liczba pożarów: {total_fires}\n\n")
-        f.write("Procent pożarów wywołanych przez różne mechanizmy:\n")
-        f.write(f"  - Wywołane przez człowieka (Human): {human_percent:.2f}%\n")
-        f.write(f"  - Wywołane przez pioruny (Lightning): {lightning_percent:.2f}%\n")
-        f.write(f"  - Nieustalone/inne (Other): {other_percent:.2f}%\n")
-        f.write(f"  - Rozprzestrzenianie lokalne (automat komórkowy): {spread_percent:.2f}%\n")
-        f.write(f"  - Rozprzestrzenianie między powiatami (automat komórkowy): {county_spread_percent:.2f}%\n\n")
-        f.write("Procent pożarów podtrzymywanych przez agentów:\n")
-        f.write(f"  - WeatherAgent: {weather_percent:.2f}% (pogoda wpłynęła na rozprzestrzenianie)\n")
-        f.write(f"  - HumanActivityAgent: {human_activity_percent:.2f}% (aktywność ludzka wpłynęła na rozprzestrzenianie)\n")
-        f.write(f"  - RiverAgent: {river_percent:.2f}% (rozprzestrzenianie w pobliżu rzek)\n")
-        f.write(f"  - MountainAgent: {mountain_percent:.2f}% (rozprzestrzenianie w górach)\n")
-        f.write(f"  - RoadAgent: {road_percent:.2f}% (rozprzestrzenianie w pobliżu dróg)\n")
-        f.write("\nLiczba pożarów z wpływem poszczególnych agentów:\n")  # ZMIANA: Dodano statystyki liczby
-        f.write(f"  - Rzeki (RiverAgent): {river_influenced} pożarów\n")
-        f.write(f"  - Góry (MountainAgent): {mountain_influenced} pożarów\n")
-        f.write(f"  - Drogi (RoadAgent): {road_influenced} pożarów\n")
-    logger.info("Zapisano podsumowanie statystyk do pliku 'simulation_summary.txt'.")
+    # Walidacja wyników symulacji z danymi rzeczywistymi
+    logger.info("Rozpoczynanie walidacji wyników symulacji z danymi rzeczywistymi...")
+    
+    real_df = df[df['FIRE_YEAR'] == SIMULATION_FIRE_YEAR].copy()
+    if real_df.empty:
+        logger.warning("Brak danych rzeczywistych dla roku {SIMULATION_FIRE_YEAR}.")
+        with open('simulation_summary.txt', 'w') as f:
+            f.write("=== Podsumowanie symulacji pożarów ===\n\n")
+            f.write(f"Całkowita liczba pożarów: {total_fires}\n\n")
+            f.write("Procent pożarów wywołanych przez różne mechanizmy:\n")
+            f.write(f"  - Wywołane przez człowieka (Human): {human_percent:.2f}%\n")
+            f.write(f"  - Wywołane przez pioruny (Lightning): {lightning_percent:.2f}%\n")
+            f.write(f"  - Nieustalone/inne (Other): {other_percent:.2f}%\n")
+            f.write(f"  - Rozprzestrzenianie lokalne (automat komórkowy): {spread_percent:.2f}%\n")
+            f.write(f"  - Rozprzestrzenianie między powiatami (automat komórkowy): {county_spread_percent:.2f}%\n\n")
+            f.write("Procent pożarów podtrzymywanych przez agentów:\n")
+            f.write(f"  - WeatherAgent: {weather_percent:.2f}% (pogoda wpłynęła na rozprzestrzenianie)\n")
+            f.write(f"  - HumanActivityAgent: {human_activity_percent:.2f}% (aktywność ludzka wpłynęła na rozprzestrzenianie)\n")
+            f.write(f"  - RiverAgent: {river_percent:.2f}% (rozprzestrzenianie w pobliżu rzek)\n")
+            f.write(f"  - MountainAgent: {mountain_percent:.2f}% (rozprzestrzenianie w górach)\n")
+            f.write(f"  - RoadAgent: {road_percent:.2f}% (rozprzestrzenianie w pobliżu dróg)\n")
+            f.write("\nLiczba pożarów z wpływem poszczególnych agentów:\n")
+            f.write(f"  - Rzeki (RiverAgent): {river_influenced} pożarów\n")
+            f.write(f"  - Góry (MountainAgent): {mountain_influenced} pożarów\n")
+            f.write(f"  - Drogi (RoadAgent): {road_influenced} pożarów\n\n")
+            f.write("=== Wyniki walidacji symulacji ===\n\n")
+            f.write("Brak danych rzeczywistych dla roku {SIMULATION_FIRE_YEAR}.\n")
+        logger.info("Zapisano podsumowanie statystyk do pliku 'simulation_summary.txt' (brak danych rzeczywistych).")
+    else:
+        real_df['CAUSE_TYPE'] = real_df['STAT_CAUSE_DESCR'].apply(
+            lambda x: 'Human' if x in human_causes else 'Lightning' if x == 'Lightning' else 'Other'
+        )
+        real_coords = real_df[['LONGITUDE', 'LATITUDE']].values
+        real_causes = real_df['CAUSE_TYPE'].values
+        real_sizes = real_df['FIRE_SIZE'].values
+        real_durations = real_df['DURATION'].values
+        real_doys = real_df['DISCOVERY_DOY'].values
+
+        sim_coords = []
+        sim_causes = []
+        sim_sizes = []
+        sim_durations = []
+        sim_doys = []
+        for fire in all_fires:
+            lon = fire.grid_x * grid_size + grid_x_min * grid_size
+            lat = fire.grid_y * grid_size + grid_y_min * grid_size
+            if not (41.0 <= lat <= 45.0 and -111.0 <= lon <= -104.0):
+                continue
+            sim_coords.append([lon, lat])
+            sim_causes.append(fire.cause if fire.cause in ['Human', 'Lightning', 'Other'] else 'Spread')
+            sim_sizes.append(fire.size)
+            sim_durations.append(fire.duration)
+            sim_doys.append(fire.start_day)
+        
+        sim_coords = np.array(sim_coords)
+        sim_causes = np.array(sim_causes)
+        sim_sizes = np.array(sim_sizes)
+        sim_durations = np.array(sim_durations)
+        sim_doys = np.array(sim_doys)
+
+        if len(sim_coords) == 0 or len(real_coords) == 0:
+            logger.warning("Brak danych symulowanych lub rzeczywistych do porównania.")
+            with open('simulation_summary.txt', 'w') as f:
+                f.write("=== Podsumowanie symulacji pożarów ===\n\n")
+                f.write(f"Całkowita liczba pożarów: {total_fires}\n\n")
+                f.write("Procent pożarów wywołanych przez różne mechanizmy:\n")
+                f.write(f"  - Wywołane przez człowieka (Human): {human_percent:.2f}%\n")
+                f.write(f"  - Wywołane przez pioruny (Lightning): {lightning_percent:.2f}%\n")
+                f.write(f"  - Nieustalone/inne (Other): {other_percent:.2f}%\n")
+                f.write(f"  - Rozprzestrzenianie lokalne (automat komórkowy): {spread_percent:.2f}%\n")
+                f.write(f"  - Rozprzestrzenianie między powiatami (automat komórkowy): {county_spread_percent:.2f}%\n\n")
+                f.write("Procent pożarów podtrzymywanych przez agentów:\n")
+                f.write(f"  - WeatherAgent: {weather_percent:.2f}% (pogoda wpłynęła na rozprzestrzenianie)\n")
+                f.write(f"  - HumanActivityAgent: {human_activity_percent:.2f}% (aktywność ludzka wpłynęła na rozprzestrzenianie)\n")
+                f.write(f"  - RiverAgent: {river_percent:.2f}% (rozprzestrzenianie w pobliżu rzek)\n")
+                f.write(f"  - MountainAgent: {mountain_percent:.2f}% (rozprzestrzenianie w górach)\n")
+                f.write(f"  - RoadAgent: {road_percent:.2f}% (rozprzestrzenianie w pobliżu dróg)\n")
+                f.write("\nLiczba pożarów z wpływem poszczególnych agentów:\n")
+                f.write(f"  - Rzeki (RiverAgent): {river_influenced} pożarów\n")
+                f.write(f"  - Góry (MountainAgent): {mountain_influenced} pożarów\n")
+                f.write(f"  - Drogi (RoadAgent): {road_influenced} pożarów\n\n")
+                f.write("=== Wyniki walidacji symulacji ===\n\n")
+                f.write("Brak danych symulowanych lub rzeczywistych do porównania.\n")
+            logger.info("Zapisano podsumowanie statystyk do pliku 'simulation_summary.txt' (brak danych do porównania).")
+        else:
+            spatial_threshold = 0.01
+            tree = cKDTree(real_coords)
+            distances, indices = tree.query(sim_coords, k=1, distance_upper_bound=spatial_threshold)
+            matched_fires = np.sum(~np.isinf(distances))
+            spatial_overlap_percent = (matched_fires / len(all_fires)) * 100 if all_fires else 0
+            logger.info("Procent pożarów symulowanych z odpowiednikiem rzeczywistym w promieniu %.2f km: %.2f%%",
+                        spatial_threshold * 111, spatial_overlap_percent)
+
+            real_cause_counts = pd.Series(real_causes).value_counts(normalize=True) * 100
+            sim_cause_counts = pd.Series(sim_causes).value_counts(normalize=True) * 100
+            cause_comparison = {}
+            for cause in ['Human', 'Lightning', 'Other', 'Spread']:
+                real_percent = real_cause_counts.get(cause, 0)
+                sim_percent = sim_cause_counts.get(cause, 0)
+                cause_comparison[cause] = {'Real': real_percent, 'Simulated': sim_percent}
+            logger.info("Porównanie rozkładu przyczyn: %s", cause_comparison)
+
+            real_size_mean = np.mean(real_sizes)
+            sim_size_mean = np.mean(sim_sizes) if sim_sizes.size > 0 else 0
+            size_mae = np.mean(np.abs(real_sizes[:min(len(real_sizes), len(sim_sizes))] - sim_sizes[:min(len(real_sizes), len(sim_sizes))])) if sim_sizes.size > 0 else float('inf')
+            logger.info("Średni rozmiar pożaru - Rzeczywisty: %.2f akrów, Symulowany: %.2f akrów, MAE: %.2f akrów",
+                        real_size_mean, sim_size_mean, size_mae)
+
+            real_duration_mean = np.mean(real_durations)
+            sim_duration_mean = np.mean(sim_durations) if sim_durations.size > 0 else 0
+            duration_mae = np.mean(np.abs(real_durations[:min(len(real_durations), len(sim_durations))] - sim_durations[:min(len(real_durations), len(sim_durations))])) if sim_durations.size > 0 else float('inf')
+            logger.info("Średni czas trwania pożaru - Rzeczywisty: %.2f dni, Symulowany: %.2f dni, MAE: %.2f dni",
+                        real_duration_mean, sim_duration_mean, duration_mae)
+
+            temporal_threshold = 3
+            temporal_matches = 0
+            for sim_doy in sim_doys:
+                if np.any(np.abs(real_doys - sim_doy) <= temporal_threshold):
+                    temporal_matches += 1
+            temporal_overlap_percent = (temporal_matches / len(sim_doys)) * 100 if sim_doys.size > 0 else 0 
+            logger.info("Procent pożarów symulowanych w oknie czasowym ±%s dni od rzeczywistych: %.2f%%",
+                        temporal_threshold, temporal_overlap_percent)
+
+            with open('simulation_summary.txt', 'w') as f:
+                f.write("=== Podsumowanie symulacji pożarów ===\n\n")
+                f.write(f"Całkowita liczba pożarów: {total_fires}\n\n")
+                f.write("Procent pożarów wywołanych przez różne mechanizmy:\n")
+                f.write(f"  - Wywołane przez człowieka (Human): {human_percent:.2f}%\n")
+                f.write(f"  - Wywołane przez pioruny (Lightning): {lightning_percent:.2f}%\n")
+                f.write(f"  - Nieustalone/inne (Other): {other_percent:.2f}%\n")
+                f.write(f"  - Rozprzestrzenianie lokalne (automat komórkowy): {spread_percent:.2f}%\n")
+                f.write(f"  - Rozprzestrzenianie między powiatami (automat komórkowy): {county_spread_percent:.2f}%\n\n")
+                f.write("Procent pożarów podtrzymywanych przez agentów:\n")
+                f.write(f"  - WeatherAgent: {weather_percent:.2f}% (pogoda wpłynęła na rozprzestrzenianie)\n")
+                f.write(f"  - HumanActivityAgent: {human_activity_percent:.2f}% (aktywność ludzka wpłynęła na rozprzestrzenianie)\n")
+                f.write(f"  - RiverAgent: {river_percent:.2f}% (rozprzestrzenianie w pobliżu rzek)\n")
+                f.write(f"  - MountainAgent: {mountain_percent:.2f}% (rozprzestrzenianie w górach)\n")
+                f.write(f"  - RoadAgent: {road_percent:.2f}% (rozprzestrzenianie w pobliżu dróg)\n")
+                f.write("\nLiczba pożarów z wpływem poszczególnych agentów:\n")
+                f.write(f"  - Rzeki (RiverAgent): {river_influenced} pożarów\n")
+                f.write(f"  - Góry (MountainAgent): {mountain_influenced} pożarów\n")
+                f.write(f"  - Drogi (RoadAgent): {road_influenced} pożarów\n\n")
+                f.write("=== Wyniki walidacji symulacji ===\n\n")
+                f.write(f"Całkowita liczba pożarów symulowanych: {len(all_fires)}\n")
+                f.write("1. Przestrzenne pokrycie:\n")
+                f.write(f"  - Procent pożarów symulowanych z odpowiednikiem rzeczywistym w promieniu {spatial_threshold * 111:.2f} km: {spatial_overlap_percent:.2f}%\n")
+                f.write(f"  - Liczba dopasowanych pożarów: {matched_fires}\n\n")
+                f.write("2. Rozkład przyczyn pożarów (%):\n")
+                for cause, stats in cause_comparison.items():
+                    f.write(f"  - {cause}:\n")
+                    f.write(f"      Symulowane: {stats['Simulated']:.2f}%\n")
+                f.write("\n")
+                f.write("3. Rozmiar pożarów:\n")
+                f.write(f"  - Średni rozmiar symulowany: {sim_size_mean:.2f} akrów\n")
+                f.write(f"  - Średni błąd bezwzględny (MAE): {size_mae:.2f} akrów\n\n")
+                f.write("4. Czas trwania pożarów:\n")
+                f.write(f"  - Średni czas trwania symulowany: {sim_duration_mean:.2f} dni\n")
+                f.write(f"  - Średni błąd bezwzględny (MAE): {duration_mae:.2f} dni\n\n")
+                f.write("5. Pokrycie czasowe:\n")
+                f.write(f"  - Procent pożarów symulowanych w oknie ±{temporal_threshold} dni od rzeczywistych: {temporal_overlap_percent:.2f}%\n")
+                f.write(f"  - Liczba dopasowanych pożarów czasowo: {temporal_matches}\n")
+            logger.info("Zapisano podsumowanie statystyk i walidacji do pliku 'simulation_summary.txt'.")
 else:
     with open('simulation_summary.txt', 'w') as f:
         f.write("=== Podsumowanie symulacji pożarów ===\n\n")
         f.write("Brak pożarów w symulacji.\n")
+        f.write("\n=== Wyniki walidacji symulacji ===\n\n")
+        f.write("Brak danych symulowanych do porównania.\n")
     logger.info("Zapisano podsumowanie statystyk do pliku 'simulation_summary.txt' (brak pożarów).")
 
 # ==========================
@@ -930,7 +1077,7 @@ for county in counties.values():
         duration_days = max(5, fire.duration)
         max_radius = min(25, max(1, fire.size / 5))
         for day in range(duration_days + 1):
-            current_date = datetime(2006, 1, 1) + timedelta(days=fire.start_day - 1 + day)  # ZMIANA: z 2005 na 2000
+            current_date = datetime(SIMULATION_FIRE_YEAR, 1, 1) + timedelta(days=fire.start_day - 1 + day)
             timestamp = current_date.isoformat()
             if day <= duration_days / 2:
                 radius = max_radius * (day / (duration_days / 2))
@@ -972,7 +1119,7 @@ for forest in forests:
             day_num = ign_day - 1 + d
             if day_num < 0 or day_num >= simulation_days:
                 continue
-            current_date = datetime(2006, 1, 1) + timedelta(days=day_num)  # ZMIANA: z 2005 na 2000
+            current_date = datetime(SIMULATION_FIRE_YEAR, 1, 1) + timedelta(days=day_num)
             timestamp = current_date.isoformat()
             feature = {
                 'type': 'Feature',
@@ -994,7 +1141,7 @@ for forest in forests:
             features.append(feature)
         restore_day = ign_day + 90
         if 1 <= restore_day <= simulation_days:
-            current_date = datetime(2006, 1, 1) + timedelta(days=restore_day - 1)  # ZMIANA: z 2005 na 2000
+            current_date = datetime(SIMULATION_FIRE_YEAR, 1, 1) + timedelta(days=restore_day - 1)
             timestamp = current_date.isoformat()
             feature = {
                 'type': 'Feature',
@@ -1041,128 +1188,3 @@ logger.info("Liczba lasów z ignition_days: %s", len([f for f in forests if f.ig
 
 m.save('wy_fires_simulation_365_with_resources.html')
 logger.info("Symulacja zapisana jako 'wy_fires_simulation_365_with_resources.html'. Liczba pożarów: %s", len(all_fires))
-
-# ==========================
-# 9. Walidacja wyników symulacji z danymi rzeczywistymi
-# ==========================
-def validate_simulation(real_df, sim_fires, grid_size, grid_x_min, grid_y_min, simulation_year=2006):  # ZMIANA: z 2005 na 2000
-    logger.info("Rozpoczynanie walidacji wyników symulacji z danymi rzeczywistymi...")
-    
-    real_df = real_df[real_df['FIRE_YEAR'] == simulation_year].copy()
-    if real_df.empty:
-        logger.warning("Brak danych rzeczywistych dla roku %s.", simulation_year)
-        with open('validation_results.txt', 'w') as f:
-            f.write("=== Wyniki walidacji symulacji ===\n\n")
-            f.write(f"Brak danych rzeczywistych dla roku {simulation_year}.\n")
-        return
-    
-    real_df['CAUSE_TYPE'] = real_df['STAT_CAUSE_DESCR'].apply(
-        lambda x: 'Human' if x in human_causes else 'Lightning' if x == 'Lightning' else 'Other'
-    )
-    real_coords = real_df[['LONGITUDE', 'LATITUDE']].values
-    real_causes = real_df['CAUSE_TYPE'].values
-    real_sizes = real_df['FIRE_SIZE'].values
-    real_durations = real_df['DURATION'].values
-    real_doys = real_df['DISCOVERY_DOY'].values
-
-    sim_coords = []
-    sim_causes = []
-    sim_sizes = []
-    sim_durations = []
-    sim_doys = []
-    for fire in sim_fires:
-        lon = fire.grid_x * grid_size + grid_x_min * grid_size
-        lat = fire.grid_y * grid_size + grid_y_min * grid_size
-        if not (41.0 <= lat <= 45.0 and -111.0 <= lon <= -104.0):
-            continue
-        sim_coords.append([lon, lat])
-        sim_causes.append(fire.cause if fire.cause in ['Human', 'Lightning', 'Other'] else 'Spread')
-        sim_sizes.append(fire.size)
-        sim_durations.append(fire.duration)
-        sim_doys.append(fire.start_day)
-    
-    sim_coords = np.array(sim_coords)
-    sim_causes = np.array(sim_causes)
-    sim_sizes = np.array(sim_sizes)
-    sim_durations = np.array(sim_durations)
-    sim_doys = np.array(sim_doys)
-
-    if len(sim_coords) == 0 or len(real_coords) == 0:
-        logger.warning("Brak danych symulowanych lub rzeczywistych do porównania.")
-        with open('validation_results.txt', 'w') as f:
-            f.write("=== Wyniki walidacji symulacji ===\n\n")
-            f.write("Brak danych symulowanych lub rzeczywistych do porównania.\n")
-        return
-
-    spatial_threshold = 0.01
-    tree = cKDTree(real_coords)
-    distances, indices = tree.query(sim_coords, k=1, distance_upper_bound=spatial_threshold)
-    matched_fires = np.sum(~np.isinf(distances))
-    spatial_overlap_percent = (matched_fires / len(sim_fires)) * 100 if sim_fires else 0
-    logger.info("Procent pożarów symulowanych z odpowiednikiem rzeczywistym w promieniu %.2f km: %.2f%%",
-                spatial_threshold * 111, spatial_overlap_percent)
-
-    real_cause_counts = pd.Series(real_causes).value_counts(normalize=True) * 100
-    sim_cause_counts = pd.Series(sim_causes).value_counts(normalize=True) * 100
-    cause_comparison = {}
-    for cause in ['Human', 'Lightning', 'Other', 'Spread']:
-        real_percent = real_cause_counts.get(cause, 0)
-        sim_percent = sim_cause_counts.get(cause, 0)
-        cause_comparison[cause] = {'Real': real_percent, 'Simulated': sim_percent}
-    logger.info("Porównanie rozkładu przyczyn: %s", cause_comparison)
-
-    real_size_mean = np.mean(real_sizes)
-    sim_size_mean = np.mean(sim_sizes) if sim_sizes.size > 0 else 0
-    size_mae = np.mean(np.abs(real_sizes[:min(len(real_sizes), len(sim_sizes))] - sim_sizes[:min(len(real_sizes), len(sim_sizes))])) if sim_sizes.size > 0 else float('inf')
-    logger.info("Średni rozmiar pożaru - Rzeczywisty: %.2f akrów, Symulowany: %.2f akrów, MAE: %.2f akrów",
-                real_size_mean, sim_size_mean, size_mae)
-
-    real_duration_mean = np.mean(real_durations)
-    sim_duration_mean = np.mean(sim_durations) if sim_durations.size > 0 else 0
-    duration_mae = np.mean(np.abs(real_durations[:min(len(real_durations), len(sim_durations))] - sim_durations[:min(len(real_durations), len(sim_durations))])) if sim_durations.size > 0 else float('inf')
-    logger.info("Średni czas trwania pożaru - Rzeczywisty: %.2f dni, Symulowany: %.2f dni, MAE: %.2f dni",
-                real_duration_mean, sim_duration_mean, duration_mae)
-
-    temporal_threshold = 3
-    temporal_matches = 0
-    for sim_doy in sim_doys:
-        if np.any(np.abs(real_doys - sim_doy) <= temporal_threshold):
-            temporal_matches += 1
-    temporal_overlap_percent = (temporal_matches / len(sim_doys)) * 100 if sim_doys.size > 0 else 0 
-    logger.info("Procent pożarów symulowanych w oknie czasowym ±%s dni od rzeczywistych: %.2f%%",
-                temporal_threshold, temporal_overlap_percent)
-
-    with open('validation_results.txt', 'w') as f:
-        f.write("=== Wyniki walidacji symulacji ===\n\n")
-        f.write(f"Rok symulacji: {simulation_year}\n")
-        f.write(f"Całkowita liczba pożarów symulowanych: {len(sim_fires)}\n")
-        f.write(f"Całkowita liczba pożarów rzeczywistych (dla roku {simulation_year}): {len(real_df)}\n\n")
-        
-        f.write("1. Przestrzenne pokrycie:\n")
-        f.write(f"  - Procent pożarów symulowanych z odpowiednikiem rzeczywistym w promieniu {spatial_threshold * 111:.2f} km: {spatial_overlap_percent:.2f}%\n")
-        f.write(f"  - Liczba dopasowanych pożarów: {matched_fires}\n\n")
-        
-        f.write("2. Rozkład przyczyn pożarów (%):\n")
-        for cause, stats in cause_comparison.items():
-            f.write(f"  - {cause}:\n")
-            f.write(f"      Rzeczywiste: {stats['Real']:.2f}%\n")
-            f.write(f"      Symulowane: {stats['Simulated']:.2f}%\n")
-        f.write("\n")
-        
-        f.write("3. Rozmiar pożarów:\n")
-        f.write(f"  - Średni rozmiar rzeczywisty: {real_size_mean:.2f} akrów\n")
-        f.write(f"  - Średni rozmiar symulowany: {sim_size_mean:.2f} akrów\n")
-        f.write(f"  - Średni błąd bezwzględny (MAE): {size_mae:.2f} akrów\n\n")
-        
-        f.write("4. Czas trwania pożarów:\n")
-        f.write(f"  - Średni czas trwania rzeczywisty: {real_duration_mean:.2f} dni\n")
-        f.write(f"  - Średni czas trwania symulowany: {sim_duration_mean:.2f} dni\n")
-        f.write(f"  - Średni błąd bezwzględny (MAE): {duration_mae:.2f} dni\n\n")
-        
-        f.write("5. Pokrycie czasowe:\n")
-        f.write(f"  - Procent pożarów symulowanych w oknie ±{temporal_threshold} dni od rzeczywistych: {temporal_overlap_percent:.2f}%\n")
-        f.write(f"  - Liczba dopasowanych pożarów czasowo: {temporal_matches}\n")
-    
-    logger.info("Zapisano wyniki walidacji do pliku 'validation_results.txt'.")
-
-validate_simulation(df, all_fires, grid_size, grid_x_min, grid_y_min, simulation_year=2006)  # ZMIANA: z 2005 na 2000

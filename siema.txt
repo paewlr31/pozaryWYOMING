@@ -1,0 +1,1282 @@
+1992
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 360
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 43.33%
+  - Wywo ane przez pioruny (Lightning): 41.39%
+  - Nieustalone/inne (Other): 13.33%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 1.67%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 0.28%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 2.78% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 11.39% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 10 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 41 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 360
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 80.56%
+  - Liczba dopasowanych po ar w: 290
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 43.33%
+  - Lightning:
+      Symulowane: 41.39%
+  - Other:
+      Symulowane: 13.33%
+  - Spread:
+      Symulowane: 1.94%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 147.75 akr w
+  -  redni b  d bezwzgl dny (MAE): 152.06 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 1.84 dni
+  -  redni b  d bezwzgl dny (MAE): 0.86 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 90.83%
+  - Liczba dopasowanych po ar w czasowo: 327
+
+1993
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 262
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 43.51%
+  - Wywo ane przez pioruny (Lightning): 42.75%
+  - Nieustalone/inne (Other): 11.83%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 0.76%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 1.15%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 11.45% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 13.74% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 30 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 36 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 262
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 82.06%
+  - Liczba dopasowanych po ar w: 215
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 43.51%
+  - Lightning:
+      Symulowane: 42.75%
+  - Other:
+      Symulowane: 11.83%
+  - Spread:
+      Symulowane: 1.91%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 147.99 akr w
+  -  redni b  d bezwzgl dny (MAE): 155.20 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 1.56 dni
+  -  redni b  d bezwzgl dny (MAE): 1.79 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 64.50%
+  - Liczba dopasowanych po ar w czasowo: 169
+
+
+1994
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 254
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 38.19%
+  - Wywo ane przez pioruny (Lightning): 46.46%
+  - Nieustalone/inne (Other): 13.39%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 1.97%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 0.00%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 1.18% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 4.33% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 3 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 11 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 254
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 80.31%
+  - Liczba dopasowanych po ar w: 204
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 38.19%
+  - Lightning:
+      Symulowane: 46.46%
+  - Other:
+      Symulowane: 13.39%
+  - Spread:
+      Symulowane: 1.97%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 147.87 akr w
+  -  redni b  d bezwzgl dny (MAE): 175.45 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 2.03 dni
+  -  redni b  d bezwzgl dny (MAE): 1.15 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 71.26%
+  - Liczba dopasowanych po ar w czasowo: 181
+
+1995
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 384
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 38.80%
+  - Wywo ane przez pioruny (Lightning): 41.93%
+  - Nieustalone/inne (Other): 15.89%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 2.86%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 0.52%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 2.86% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 10.68% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 11 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 41 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 384
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 76.82%
+  - Liczba dopasowanych po ar w: 295
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 38.80%
+  - Lightning:
+      Symulowane: 41.93%
+  - Other:
+      Symulowane: 15.89%
+  - Spread:
+      Symulowane: 3.39%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 146.15 akr w
+  -  redni b  d bezwzgl dny (MAE): 142.94 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 1.74 dni
+  -  redni b  d bezwzgl dny (MAE): 1.66 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 76.56%
+  - Liczba dopasowanych po ar w czasowo: 294
+
+
+1996
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 364
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 40.38%
+  - Wywo ane przez pioruny (Lightning): 45.05%
+  - Nieustalone/inne (Other): 12.91%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 1.37%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 0.27%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 3.02% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 6.87% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 11 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 25 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 364
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 75.82%
+  - Liczba dopasowanych po ar w: 276
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 40.50%
+  - Lightning:
+      Symulowane: 44.90%
+  - Other:
+      Symulowane: 12.95%
+  - Spread:
+      Symulowane: 1.65%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 148.25 akr w
+  -  redni b  d bezwzgl dny (MAE): 284.18 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 1.98 dni
+  -  redni b  d bezwzgl dny (MAE): 1.30 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 74.10%
+  - Liczba dopasowanych po ar w czasowo: 269
+
+
+1997
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 126
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 42.86%
+  - Wywo ane przez pioruny (Lightning): 38.10%
+  - Nieustalone/inne (Other): 14.29%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 4.76%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 0.00%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 0.00% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 0.00% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 0 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 0 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 126
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 77.78%
+  - Liczba dopasowanych po ar w: 98
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 42.86%
+  - Lightning:
+      Symulowane: 38.10%
+  - Other:
+      Symulowane: 14.29%
+  - Spread:
+      Symulowane: 4.76%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 144.62 akr w
+  -  redni b  d bezwzgl dny (MAE): 146.98 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 1.61 dni
+  -  redni b  d bezwzgl dny (MAE): 0.87 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 48.41%
+  - Liczba dopasowanych po ar w czasowo: 61
+
+
+1998
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 278
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 35.25%
+  - Wywo ane przez pioruny (Lightning): 46.04%
+  - Nieustalone/inne (Other): 15.83%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 2.52%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 0.36%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 0.00% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 0.00% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 0 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 0 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 278
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 86.69%
+  - Liczba dopasowanych po ar w: 241
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 33.06%
+  - Lightning:
+      Symulowane: 46.53%
+  - Other:
+      Symulowane: 17.14%
+  - Spread:
+      Symulowane: 3.27%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 146.50 akr w
+  -  redni b  d bezwzgl dny (MAE): 149.14 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 1.57 dni
+  -  redni b  d bezwzgl dny (MAE): 1.33 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 59.18%
+  - Liczba dopasowanych po ar w czasowo: 145
+
+
+1999
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 315
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 40.63%
+  - Wywo ane przez pioruny (Lightning): 38.73%
+  - Nieustalone/inne (Other): 14.92%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 5.08%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 0.63%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 0.00% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 13.33% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 0 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 42 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 315
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 85.08%
+  - Liczba dopasowanych po ar w: 268
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 40.38%
+  - Lightning:
+      Symulowane: 38.78%
+  - Other:
+      Symulowane: 15.06%
+  - Spread:
+      Symulowane: 5.77%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 143.89 akr w
+  -  redni b  d bezwzgl dny (MAE): 250.01 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 1.73 dni
+  -  redni b  d bezwzgl dny (MAE): 1.33 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 79.81%
+  - Liczba dopasowanych po ar w czasowo: 249
+
+
+2000
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 278
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 39.21%
+  - Wywo ane przez pioruny (Lightning): 41.01%
+  - Nieustalone/inne (Other): 15.83%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 3.24%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 0.72%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 1.44% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 10.43% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 4 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 29 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 278
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 82.01%
+  - Liczba dopasowanych po ar w: 228
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 39.27%
+  - Lightning:
+      Symulowane: 41.45%
+  - Other:
+      Symulowane: 15.27%
+  - Spread:
+      Symulowane: 4.00%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 145.71 akr w
+  -  redni b  d bezwzgl dny (MAE): 286.48 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 2.11 dni
+  -  redni b  d bezwzgl dny (MAE): 2.76 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 70.91%
+  - Liczba dopasowanych po ar w czasowo: 195
+
+
+2001
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 326
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 39.88%
+  - Wywo ane przez pioruny (Lightning): 42.33%
+  - Nieustalone/inne (Other): 15.03%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 2.76%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 0.00%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 3.68% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 3.07% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 12 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 10 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 326
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 84.66%
+  - Liczba dopasowanych po ar w: 276
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 40.06%
+  - Lightning:
+      Symulowane: 42.24%
+  - Other:
+      Symulowane: 14.91%
+  - Spread:
+      Symulowane: 2.80%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 146.91 akr w
+  -  redni b  d bezwzgl dny (MAE): 234.77 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 1.75 dni
+  -  redni b  d bezwzgl dny (MAE): 3.39 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 70.19%
+  - Liczba dopasowanych po ar w czasowo: 226
+
+
+2002
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 400
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 44.25%
+  - Wywo ane przez pioruny (Lightning): 40.25%
+  - Nieustalone/inne (Other): 12.50%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 2.50%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 0.50%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 1.00% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 6.50% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 4 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 26 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 400
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 77.25%
+  - Liczba dopasowanych po ar w: 309
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 44.19%
+  - Lightning:
+      Symulowane: 40.66%
+  - Other:
+      Symulowane: 12.12%
+  - Spread:
+      Symulowane: 3.03%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 146.65 akr w
+  -  redni b  d bezwzgl dny (MAE): 399.28 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 1.73 dni
+  -  redni b  d bezwzgl dny (MAE): 1.77 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 91.41%
+  - Liczba dopasowanych po ar w czasowo: 362
+
+2003
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 347
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 38.90%
+  - Wywo ane przez pioruny (Lightning): 44.67%
+  - Nieustalone/inne (Other): 13.54%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 2.88%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 0.00%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 2.31% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 5.76% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 8 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 20 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 347
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 74.64%
+  - Liczba dopasowanych po ar w: 259
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 38.94%
+  - Lightning:
+      Symulowane: 44.84%
+  - Other:
+      Symulowane: 13.27%
+  - Spread:
+      Symulowane: 2.95%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 147.07 akr w
+  -  redni b  d bezwzgl dny (MAE): 271.31 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 1.84 dni
+  -  redni b  d bezwzgl dny (MAE): 3.47 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 82.30%
+  - Liczba dopasowanych po ar w czasowo: 279
+
+
+2004
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 296
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 44.26%
+  - Wywo ane przez pioruny (Lightning): 40.54%
+  - Nieustalone/inne (Other): 11.15%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 3.04%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 1.01%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 4.73% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 14.19% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 14 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 42 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 296
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 84.46%
+  - Liczba dopasowanych po ar w: 250
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 44.26%
+  - Lightning:
+      Symulowane: 40.54%
+  - Other:
+      Symulowane: 11.15%
+  - Spread:
+      Symulowane: 4.05%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 145.64 akr w
+  -  redni b  d bezwzgl dny (MAE): 189.30 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 1.61 dni
+  -  redni b  d bezwzgl dny (MAE): 1.30 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 76.69%
+  - Liczba dopasowanych po ar w czasowo: 227
+
+
+2005
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 356
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 40.17%
+  - Wywo ane przez pioruny (Lightning): 42.42%
+  - Nieustalone/inne (Other): 12.36%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 4.78%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 0.28%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 1.97% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 6.74% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 7 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 24 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 356
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 80.34%
+  - Liczba dopasowanych po ar w: 286
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 39.83%
+  - Lightning:
+      Symulowane: 42.69%
+  - Other:
+      Symulowane: 12.61%
+  - Spread:
+      Symulowane: 4.87%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 144.83 akr w
+  -  redni b  d bezwzgl dny (MAE): 183.24 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 1.87 dni
+  -  redni b  d bezwzgl dny (MAE): 3.53 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 87.39%
+  - Liczba dopasowanych po ar w czasowo: 305
+
+
+2006
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 305
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 42.95%
+  - Wywo ane przez pioruny (Lightning): 35.74%
+  - Nieustalone/inne (Other): 15.74%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 4.92%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 0.66%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 2.62% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 7.87% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 8 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 24 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 305
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 79.34%
+  - Liczba dopasowanych po ar w: 242
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 43.38%
+  - Lightning:
+      Symulowane: 35.43%
+  - Other:
+      Symulowane: 15.56%
+  - Spread:
+      Symulowane: 5.63%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 143.92 akr w
+  -  redni b  d bezwzgl dny (MAE): 717.38 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 2.08 dni
+  -  redni b  d bezwzgl dny (MAE): 4.14 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 91.39%
+  - Liczba dopasowanych po ar w czasowo: 276
+
+2007
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 347
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 45.24%
+  - Wywo ane przez pioruny (Lightning): 41.50%
+  - Nieustalone/inne (Other): 11.82%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 1.44%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 0.00%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 19.31% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 8.36% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 67 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 29 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 347
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 85.59%
+  - Liczba dopasowanych po ar w: 297
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 45.24%
+  - Lightning:
+      Symulowane: 41.50%
+  - Other:
+      Symulowane: 11.82%
+  - Spread:
+      Symulowane: 1.44%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 148.41 akr w
+  -  redni b  d bezwzgl dny (MAE): 338.40 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 1.87 dni
+  -  redni b  d bezwzgl dny (MAE): 3.64 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 79.83%
+  - Liczba dopasowanych po ar w czasowo: 277
+
+2008
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 279
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 35.84%
+  - Wywo ane przez pioruny (Lightning): 45.88%
+  - Nieustalone/inne (Other): 13.62%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 4.66%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 0.00%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 1.79% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 17.56% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 5 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 49 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 279
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 81.72%
+  - Liczba dopasowanych po ar w: 228
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 35.97%
+  - Lightning:
+      Symulowane: 45.68%
+  - Other:
+      Symulowane: 13.67%
+  - Spread:
+      Symulowane: 4.68%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 144.93 akr w
+  -  redni b  d bezwzgl dny (MAE): 443.88 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 1.92 dni
+  -  redni b  d bezwzgl dny (MAE): 2.03 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 83.45%
+  - Liczba dopasowanych po ar w czasowo: 232
+
+2009
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 286
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 40.91%
+  - Wywo ane przez pioruny (Lightning): 42.31%
+  - Nieustalone/inne (Other): 11.89%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 4.55%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 0.35%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 7.34% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 6.99% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 21 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 20 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 286
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 75.17%
+  - Liczba dopasowanych po ar w: 215
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 40.70%
+  - Lightning:
+      Symulowane: 42.46%
+  - Other:
+      Symulowane: 11.93%
+  - Spread:
+      Symulowane: 4.91%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 144.66 akr w
+  -  redni b  d bezwzgl dny (MAE): 153.52 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 1.93 dni
+  -  redni b  d bezwzgl dny (MAE): 2.64 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 91.58%
+  - Liczba dopasowanych po ar w czasowo: 261
+
+2010
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 332
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 40.66%
+  - Wywo ane przez pioruny (Lightning): 38.25%
+  - Nieustalone/inne (Other): 16.57%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 3.31%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 1.20%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 10.24% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 8.73% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 34 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 29 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 332
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 76.81%
+  - Liczba dopasowanych po ar w: 255
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 40.79%
+  - Lightning:
+      Symulowane: 38.37%
+  - Other:
+      Symulowane: 16.31%
+  - Spread:
+      Symulowane: 4.53%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 144.99 akr w
+  -  redni b  d bezwzgl dny (MAE): 275.18 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 2.00 dni
+  -  redni b  d bezwzgl dny (MAE): 3.30 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 80.66%
+  - Liczba dopasowanych po ar w czasowo: 267
+
+2011
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 463
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 43.20%
+  - Wywo ane przez pioruny (Lightning): 38.66%
+  - Nieustalone/inne (Other): 14.04%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 3.02%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 1.08%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 8.21% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 7.99% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 38 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 37 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 463
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 86.61%
+  - Liczba dopasowanych po ar w: 401
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 43.29%
+  - Lightning:
+      Symulowane: 38.74%
+  - Other:
+      Symulowane: 14.07%
+  - Spread:
+      Symulowane: 3.90%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 145.70 akr w
+  -  redni b  d bezwzgl dny (MAE): 338.18 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 1.95 dni
+  -  redni b  d bezwzgl dny (MAE): 2.11 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 70.78%
+  - Liczba dopasowanych po ar w czasowo: 327
+
+2012
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 521
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 41.07%
+  - Wywo ane przez pioruny (Lightning): 41.07%
+  - Nieustalone/inne (Other): 13.63%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 3.65%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 0.58%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 7.49% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 9.60% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 39 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 50 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 521
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 80.42%
+  - Liczba dopasowanych po ar w: 419
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 41.15%
+  - Lightning:
+      Symulowane: 40.96%
+  - Other:
+      Symulowane: 13.65%
+  - Spread:
+      Symulowane: 4.23%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 145.36 akr w
+  -  redni b  d bezwzgl dny (MAE): 983.81 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 1.97 dni
+  -  redni b  d bezwzgl dny (MAE): 3.75 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 95.00%
+  - Liczba dopasowanych po ar w czasowo: 494
+
+2013
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 366
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 41.26%
+  - Wywo ane przez pioruny (Lightning): 44.54%
+  - Nieustalone/inne (Other): 11.48%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 2.46%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 0.27%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 7.38% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 7.65% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 27 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 28 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 366
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 76.78%
+  - Liczba dopasowanych po ar w: 281
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 41.21%
+  - Lightning:
+      Symulowane: 44.51%
+  - Other:
+      Symulowane: 11.54%
+  - Spread:
+      Symulowane: 2.75%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 147.14 akr w
+  -  redni b  d bezwzgl dny (MAE): 223.88 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 2.00 dni
+  -  redni b  d bezwzgl dny (MAE): 3.49 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 77.20%
+  - Liczba dopasowanych po ar w czasowo: 281
+
+2014
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 306
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 40.20%
+  - Wywo ane przez pioruny (Lightning): 44.44%
+  - Nieustalone/inne (Other): 12.09%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 1.63%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 1.63%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 9.48% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 9.80% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 29 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 30 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 306
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 79.08%
+  - Liczba dopasowanych po ar w: 242
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 40.20%
+  - Lightning:
+      Symulowane: 44.44%
+  - Other:
+      Symulowane: 12.09%
+  - Spread:
+      Symulowane: 3.27%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 146.47 akr w
+  -  redni b  d bezwzgl dny (MAE): 151.53 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 1.81 dni
+  -  redni b  d bezwzgl dny (MAE): 1.75 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 83.99%
+  - Liczba dopasowanych po ar w czasowo: 257
+
+2015
+=== Podsumowanie symulacji po ar w ===
+
+Ca kowita liczba po ar w: 358
+
+Procent po ar w wywo anych przez r ne mechanizmy:
+  - Wywo ane przez cz owieka (Human): 37.99%
+  - Wywo ane przez pioruny (Lightning): 42.74%
+  - Nieustalone/inne (Other): 16.20%
+  - Rozprzestrzenianie lokalne (automat kom rkowy): 3.07%
+  - Rozprzestrzenianie mi dzy powiatami (automat kom rkowy): 0.00%
+
+Procent po ar w podtrzymywanych przez agent w:
+  - WeatherAgent: 100.00% (pogoda wp yn a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno   ludzka wp yn a na rozprzestrzenianie)
+  - RiverAgent: 4.47% (rozprzestrzenianie w pobli u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g rach)
+  - RoadAgent: 10.34% (rozprzestrzenianie w pobli u dr g)
+
+Liczba po ar w z wp ywem poszczeg lnych agent w:
+  - Rzeki (RiverAgent): 16 po ar w
+  - G ry (MountainAgent): 0 po ar w
+  - Drogi (RoadAgent): 37 po ar w
+
+=== Wyniki walidacji symulacji ===
+
+Ca kowita liczba po ar w symulowanych: 358
+1. Przestrzenne pokrycie:
+  - Procent po ar w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 81.84%
+  - Liczba dopasowanych po ar w: 293
+
+2. Rozk ad przyczyn po ar w (%):
+  - Human:
+      Symulowane: 38.31%
+  - Lightning:
+      Symulowane: 43.10%
+  - Other:
+      Symulowane: 15.49%
+  - Spread:
+      Symulowane: 3.10%
+
+3. Rozmiar po ar w:
+  -  redni rozmiar symulowany: 146.48 akr w
+  -  redni b  d bezwzgl dny (MAE): 194.06 akr w
+
+4. Czas trwania po ar w:
+  -  redni czas trwania symulowany: 1.92 dni
+  -  redni b  d bezwzgl dny (MAE): 1.82 dni
+
+5. Pokrycie czasowe:
+  - Procent po ar w symulowanych w oknie  3 dni od rzeczywistych: 89.86%
+  - Liczba dopasowanych po ar w czasowo: 319

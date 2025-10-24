@@ -1,0 +1,25 @@
+=== �rednie statystyki symulacji dla lat 1992-2015 ===
+
+�rednia ca�kowita liczba po�ar�w: 338.67
+
+�redni procent po�ar�w wywo�anych przez r�ne mechanizmy:
+  - Wywo�ane przez cz�owieka (Human): 40.24%
+  - Wywo�ane przez pioruny (Lightning): 41.82%
+  - Nieustalone/inne (Other): 13.88%
+  - Rozprzestrzenianie lokalne (automat kom�rkowy): 3.49%
+  - Rozprzestrzenianie mi�dzy powiatami (automat kom�rkowy): 0.57%
+
+�redni procent po�ar�w podtrzymywanych przez agent�w:
+  - WeatherAgent: 100.00% (pogoda wp�yn�a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywno�� ludzka wp�yn�a na rozprzestrzenianie)
+  - RiverAgent: 3.40% (rozprzestrzenianie w pobli�u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w g�rach)
+  - RoadAgent: 10.38% (rozprzestrzenianie w pobli�u dr�g)
+
+�rednie wyniki walidacji:
+  - Przestrzenne pokrycie: 80.00%
+  - �redni rozmiar po�aru (symulowany): 145.57 akr�w
+  - �redni b��d bezwzgl�dny rozmiaru (MAE): 312.75 akr�w
+  - �redni czas trwania po�aru (symulowany): 1.87 dni
+  - �redni b��d bezwzgl�dny czasu trwania (MAE): 2.29 dni
+  - Czasowe pokrycie: 78.91%

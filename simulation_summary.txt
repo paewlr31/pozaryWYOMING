@@ -1,22 +1,51 @@
 === Podsumowanie symulacji po¿arów ===
 
-Ca³kowita liczba po¿arów: 380
+Ca³kowita liczba po¿arów: 358
 
 Procent po¿arów wywo³anych przez ró¿ne mechanizmy:
-  - Wywo³ane przez cz³owieka (Human): 41.58%
-  - Wywo³ane przez pioruny (Lightning): 39.21%
-  - Nieustalone/inne (Other): 13.95%
-  - Rozprzestrzenianie lokalne (automat komórkowy): 5.00%
-  - Rozprzestrzenianie miêdzy powiatami (automat komórkowy): 0.26%
+  - Wywo³ane przez cz³owieka (Human): 37.99%
+  - Wywo³ane przez pioruny (Lightning): 42.74%
+  - Nieustalone/inne (Other): 16.20%
+  - Rozprzestrzenianie lokalne (automat komórkowy): 3.07%
+  - Rozprzestrzenianie miêdzy powiatami (automat komórkowy): 0.00%
 
 Procent po¿arów podtrzymywanych przez agentów:
   - WeatherAgent: 100.00% (pogoda wp³ynê³a na rozprzestrzenianie)
   - HumanActivityAgent: 100.00% (aktywnoœæ ludzka wp³ynê³a na rozprzestrzenianie)
-  - RiverAgent: 4.21% (rozprzestrzenianie w pobli¿u rzek)
+  - RiverAgent: 4.47% (rozprzestrzenianie w pobli¿u rzek)
   - MountainAgent: 0.00% (rozprzestrzenianie w górach)
-  - RoadAgent: 4.74% (rozprzestrzenianie w pobli¿u dróg)
+  - RoadAgent: 10.34% (rozprzestrzenianie w pobli¿u dróg)
 
 Liczba po¿arów z wp³ywem poszczególnych agentów:
   - Rzeki (RiverAgent): 16 po¿arów
   - Góry (MountainAgent): 0 po¿arów
-  - Drogi (RoadAgent): 18 po¿arów
+  - Drogi (RoadAgent): 37 po¿arów
+
+=== Wyniki walidacji symulacji ===
+
+Ca³kowita liczba po¿arów symulowanych: 358
+1. Przestrzenne pokrycie:
+  - Procent po¿arów symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 81.84%
+  - Liczba dopasowanych po¿arów: 293
+
+2. Rozk³ad przyczyn po¿arów (%):
+  - Human:
+      Symulowane: 38.31%
+  - Lightning:
+      Symulowane: 43.10%
+  - Other:
+      Symulowane: 15.49%
+  - Spread:
+      Symulowane: 3.10%
+
+3. Rozmiar po¿arów:
+  - Œredni rozmiar symulowany: 146.48 akrów
+  - Œredni b³¹d bezwzglêdny (MAE): 194.06 akrów
+
+4. Czas trwania po¿arów:
+  - Œredni czas trwania symulowany: 1.92 dni
+  - Œredni b³¹d bezwzglêdny (MAE): 1.82 dni
+
+5. Pokrycie czasowe:
+  - Procent po¿arów symulowanych w oknie ±3 dni od rzeczywistych: 89.86%
+  - Liczba dopasowanych po¿arów czasowo: 319
