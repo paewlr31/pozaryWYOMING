@@ -1,51 +1,51 @@
 === Podsumowanie symulacji po¿arów ===
 
-Ca³kowita liczba po¿arów: 358
+Ca³kowita liczba po¿arów: 323
 
 Procent po¿arów wywo³anych przez ró¿ne mechanizmy:
-  - Wywo³ane przez cz³owieka (Human): 37.99%
-  - Wywo³ane przez pioruny (Lightning): 42.74%
-  - Nieustalone/inne (Other): 16.20%
-  - Rozprzestrzenianie lokalne (automat komórkowy): 3.07%
-  - Rozprzestrzenianie miêdzy powiatami (automat komórkowy): 0.00%
+  - Wywo³ane przez cz³owieka (Human): 43.65%
+  - Wywo³ane przez pioruny (Lightning): 37.15%
+  - Nieustalone/inne (Other): 14.86%
+  - Rozprzestrzenianie lokalne (automat komórkowy): 3.72%
+  - Rozprzestrzenianie miêdzy powiatami (automat komórkowy): 0.62%
 
 Procent po¿arów podtrzymywanych przez agentów:
   - WeatherAgent: 100.00% (pogoda wp³ynê³a na rozprzestrzenianie)
   - HumanActivityAgent: 100.00% (aktywnoœæ ludzka wp³ynê³a na rozprzestrzenianie)
-  - RiverAgent: 4.47% (rozprzestrzenianie w pobli¿u rzek)
+  - RiverAgent: 3.72% (rozprzestrzenianie w pobli¿u rzek)
   - MountainAgent: 0.00% (rozprzestrzenianie w górach)
-  - RoadAgent: 10.34% (rozprzestrzenianie w pobli¿u dróg)
+  - RoadAgent: 8.98% (rozprzestrzenianie w pobli¿u dróg)
 
 Liczba po¿arów z wp³ywem poszczególnych agentów:
-  - Rzeki (RiverAgent): 16 po¿arów
+  - Rzeki (RiverAgent): 12 po¿arów
   - Góry (MountainAgent): 0 po¿arów
-  - Drogi (RoadAgent): 37 po¿arów
+  - Drogi (RoadAgent): 29 po¿arów
 
 === Wyniki walidacji symulacji ===
 
-Ca³kowita liczba po¿arów symulowanych: 358
+Ca³kowita liczba po¿arów symulowanych: 323
 1. Przestrzenne pokrycie:
-  - Procent po¿arów symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 81.84%
-  - Liczba dopasowanych po¿arów: 293
+  - Procent po¿arów symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 79.26%
+  - Liczba dopasowanych po¿arów: 256
 
 2. Rozk³ad przyczyn po¿arów (%):
   - Human:
-      Symulowane: 38.31%
+      Symulowane: 43.75%
   - Lightning:
-      Symulowane: 43.10%
+      Symulowane: 36.88%
   - Other:
-      Symulowane: 15.49%
+      Symulowane: 15.00%
   - Spread:
-      Symulowane: 3.10%
+      Symulowane: 4.38%
 
 3. Rozmiar po¿arów:
-  - Œredni rozmiar symulowany: 146.48 akrów
-  - Œredni b³¹d bezwzglêdny (MAE): 194.06 akrów
+  - Œredni rozmiar symulowany: 145.47 akrów
+  - Œredni b³¹d bezwzglêdny (MAE): 199.85 akrów
 
 4. Czas trwania po¿arów:
-  - Œredni czas trwania symulowany: 1.92 dni
-  - Œredni b³¹d bezwzglêdny (MAE): 1.82 dni
+  - Œredni czas trwania symulowany: 2.03 dni
+  - Œredni b³¹d bezwzglêdny (MAE): 1.96 dni
 
 5. Pokrycie czasowe:
-  - Procent po¿arów symulowanych w oknie ±3 dni od rzeczywistych: 89.86%
-  - Liczba dopasowanych po¿arów czasowo: 319
+  - Procent po¿arów symulowanych w oknie ±3 dni od rzeczywistych: 88.75%
+  - Liczba dopasowanych po¿arów czasowo: 284
