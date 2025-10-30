@@ -6,7 +6,7 @@
 
 # Dane i raporty
 wildfires.csv
-*.csv
+
 *.json
 *.html
 *.png
