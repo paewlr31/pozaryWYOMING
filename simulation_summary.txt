@@ -1,34 +1,34 @@
-=== Podsumowanie symulacji po¿arów ===
+=== Podsumowanie symulacji poï¿½arï¿½w ===
 
-Ca³kowita liczba po¿arów: 323
+Caï¿½kowita liczba poï¿½arï¿½w: 323
 
-Procent po¿arów wywo³anych przez ró¿ne mechanizmy:
-  - Wywo³ane przez cz³owieka (Human): 43.65%
-  - Wywo³ane przez pioruny (Lightning): 37.15%
+Procent poï¿½arï¿½w wywoï¿½anych przez rï¿½ne mechanizmy:
+  - Wywoï¿½ane przez czï¿½owieka (Human): 43.65%
+  - Wywoï¿½ane przez pioruny (Lightning): 37.15%
   - Nieustalone/inne (Other): 14.86%
-  - Rozprzestrzenianie lokalne (automat komórkowy): 3.72%
-  - Rozprzestrzenianie miêdzy powiatami (automat komórkowy): 0.62%
+  - Rozprzestrzenianie lokalne (automat komï¿½rkowy): 3.72%
+  - Rozprzestrzenianie miï¿½dzy powiatami (automat komï¿½rkowy): 0.62%
 
-Procent po¿arów podtrzymywanych przez agentów:
-  - WeatherAgent: 100.00% (pogoda wp³ynê³a na rozprzestrzenianie)
-  - HumanActivityAgent: 100.00% (aktywnoœæ ludzka wp³ynê³a na rozprzestrzenianie)
-  - RiverAgent: 3.72% (rozprzestrzenianie w pobli¿u rzek)
-  - MountainAgent: 0.00% (rozprzestrzenianie w górach)
-  - RoadAgent: 8.98% (rozprzestrzenianie w pobli¿u dróg)
+Procent poï¿½arï¿½w podtrzymywanych przez agentï¿½w:
+  - WeatherAgent: 100.00% (pogoda wpï¿½ynï¿½a na rozprzestrzenianie)
+  - HumanActivityAgent: 100.00% (aktywnoï¿½ï¿½ ludzka wpï¿½ynï¿½a na rozprzestrzenianie)
+  - RiverAgent: 3.72% (rozprzestrzenianie w pobliï¿½u rzek)
+  - MountainAgent: 0.00% (rozprzestrzenianie w gï¿½rach)
+  - RoadAgent: 8.98% (rozprzestrzenianie w pobliï¿½u drï¿½g)
 
-Liczba po¿arów z wp³ywem poszczególnych agentów:
-  - Rzeki (RiverAgent): 12 po¿arów
-  - Góry (MountainAgent): 0 po¿arów
-  - Drogi (RoadAgent): 29 po¿arów
+Liczba poï¿½arï¿½w z wpï¿½ywem poszczegï¿½lnych agentï¿½w:
+  - Rzeki (RiverAgent): 12 poï¿½arï¿½w
+  - Gï¿½ry (MountainAgent): 0 poï¿½arï¿½w
+  - Drogi (RoadAgent): 29 poï¿½arï¿½w
 
 === Wyniki walidacji symulacji ===
 
-Ca³kowita liczba po¿arów symulowanych: 323
+Caï¿½kowita liczba poï¿½arï¿½w symulowanych: 323
 1. Przestrzenne pokrycie:
-  - Procent po¿arów symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 79.26%
-  - Liczba dopasowanych po¿arów: 256
+  - Procent poï¿½arï¿½w symulowanych z odpowiednikiem rzeczywistym w promieniu 1.11 km: 79.26%
+  - Liczba dopasowanych poï¿½arï¿½w: 256
 
-2. Rozk³ad przyczyn po¿arów (%):
+2. Rozkï¿½ad przyczyn poï¿½arï¿½w (%):
   - Human:
       Symulowane: 43.75%
   - Lightning:
@@ -38,14 +38,16 @@ Ca³kowita liczba po¿arów symulowanych: 323
   - Spread:
       Symulowane: 4.38%
 
-3. Rozmiar po¿arów:
-  - Œredni rozmiar symulowany: 145.47 akrów
-  - Œredni b³¹d bezwzglêdny (MAE): 199.85 akrów
+3. Rozmiar poï¿½arï¿½w:
+  - ï¿½redni rozmiar symulowany: 145.47 akrï¿½w
+  - ï¿½redni bï¿½ï¿½d bezwzglï¿½dny (MAE): 199.85 akrï¿½w
 
-4. Czas trwania po¿arów:
-  - Œredni czas trwania symulowany: 2.03 dni
-  - Œredni b³¹d bezwzglêdny (MAE): 1.96 dni
+4. Czas trwania poï¿½arï¿½w:
+  - ï¿½redni czas trwania symulowany: 2.03 dni
+  - ï¿½redni bï¿½ï¿½d bezwzglï¿½dny (MAE): 1.96 dni
 
 5. Pokrycie czasowe:
-  - Procent po¿arów symulowanych w oknie ±3 dni od rzeczywistych: 88.75%
-  - Liczba dopasowanych po¿arów czasowo: 284
+  - Procent poï¿½arï¿½w symulowanych w oknie ï¿½3 dni od rzeczywistych: 88.75%
+  - Liczba dopasowanych poï¿½arï¿½w czasowo: 284
+
+  rzeki + co by bylo gdyby ...  + wizualizacja +gdybysmy otoczyli pÅ‚otami + legenda
